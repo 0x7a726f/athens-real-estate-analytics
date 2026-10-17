@@ -11,7 +11,10 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; background-color: #090d16; color: #f1f5f9; }
-    #athensMap { height: 590px; width: 100%; border-radius: 0.875rem; }
+    #athensMap { height: 900px; width: 100%; border-radius: 0.875rem; }
+    @media (max-width: 1280px) { #athensMap { height: 760px; } }
+    @media (max-width: 1024px) { #athensMap { height: 520px; } }
+    @media (max-width: 768px) { #athensMap { height: 380px; } }
     .glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.7); }
     .leaflet-popup-content-wrapper { background: #0f172a; color: #f8fafc; border: 1px solid #334155; border-radius: 0.75rem; }
     .leaflet-popup-tip { background: #0f172a; }
@@ -443,7 +446,7 @@
 
   </main>
 
-  <script src="./serverless_engine.js?v=1.4"></script>
-  <script src="./mvc_client.js?v=1.4"></script>
+  <script src="./serverless_engine.js?v=1.5"></script>
+  <script src="./mvc_client.js?v=1.5"></script>
 </body>
 </html>

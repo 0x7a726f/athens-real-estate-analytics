@@ -69,6 +69,7 @@ function initLeafletMap() {
 
   map.on("click", selectMapPoint);
   map.on("dblclick", selectMapPoint);
+  setTimeout(() => { if (map) map.invalidateSize(); }, 200);
 }
 
 function selectMapPoint(ev) {
@@ -906,7 +907,7 @@ function renderEvaluationSidePanel(data) {
 
   const tbody = document.getElementById("competitorsTableBody");
   tbody.innerHTML = "";
-  (roi.nearby_competitors || []).forEach((comp) => {
+  (roi.nearby_competitors || []).slice(0, 8).forEach((comp) => {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-800/40 transition";
     tr.innerHTML = `
