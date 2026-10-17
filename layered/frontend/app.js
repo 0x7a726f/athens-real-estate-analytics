@@ -641,7 +641,9 @@ function renderEvaluationSidePanel(data) {
     renderDynamicNeighborhoodIndexChart(loc.neighborhood_index_series, loc);
   }
 
-  document.getElementById("evalCompetitorCount").textContent = roi.used_nearest_fallback
+  document.getElementById("evalCompetitorCount").textContent = loc.is_out_of_zone
+    ? "0 ανταγωνιστές (Εκτός Ζώνης)"
+    : roi.used_nearest_fallback
     ? `Κοντινότερα ${roi.sample_size_used} καταλύματα Αθήνας`
     : `${roi.competitors_in_radius} ανταγωνιστές εντός ${data.query.radius_m}m`;
 
@@ -746,7 +748,7 @@ function renderEvaluationSidePanel(data) {
               <span class="font-bold text-white">${r.count}</span>
             </div>
             <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-0.5">
-              <div class="${r.barClass} h-full rounded-full" style="width:${Math.max(12, r.pct)}%"></div>
+              <div class="${r.barClass} h-full rounded-full" style="width:${r.pct > 0 ? Math.max(8, r.pct) : 0}%"></div>
             </div>
           </div>
         `

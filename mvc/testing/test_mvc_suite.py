@@ -133,7 +133,17 @@ async def run_mvc_tests() -> None:
     p95 = sorted(latencies)[95]
     assert p95 < 50.0
     print(f"[PASS] 7. MVC Model Performance Benchmark -> Mean={statistics.mean(latencies):.2f}ms, p95={p95:.2f}ms")
-    print("=== ALL MVC TESTS PASSED SUCCESSFULLY ===\n")
+    # 8. Test MVC Sea / Out-of-Zone Coordinate & Zero-Discrepancy Audit
+    status, _, sea_ev = await asgi_request(
+        app, "GET", "/api/v1/properties/evaluate?lat=37.8900&lon=23.6700&radius=600&rooms=2"
+    )
+    assert status == 200
+    assert sea_ev["location_context"]["is_out_of_zone"] is True
+    assert sea_ev["investment_rating"]["score"] == 0.0
+    assert sea_ev["investment_rating"]["breakdown"]["macro_resilience_score"] == 0.0
+    assert sea_ev["airbnb_roi_metrics"]["estimated_annual_gross_revenue_eur"] == 0.0
+    print("[PASS] 8. MVC Controller `/api/v1/properties/evaluate` (Saronic Sea) -> Score=0.0, Agora=0.0/15")
+    print("=== ALL 8 MVC TESTS PASSED SUCCESSFULLY ===\n")
 
 
 if __name__ == "__main__":

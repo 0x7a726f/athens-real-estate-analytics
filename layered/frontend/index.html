@@ -473,12 +473,12 @@
             <div class="flex flex-wrap items-center justify-between gap-1">
               <span class="font-bold text-indigo-300">📐 Πώς υπολογίζεται το Investment Score (0–100):</span>
               <code id="scoreLiveEquation" class="px-2 py-0.5 rounded bg-slate-950 text-emerald-300 font-bold border border-slate-800">
-                30.0 + 19.4 + 20.0 + 11.5 - 0 = 80.9 / 100
+                30.0 + 19.4 + 20.0 + 12.1 - 0 = 81.5 / 100
               </code>
             </div>
             <p class="text-[10px] text-slate-400 leading-relaxed">
-              <b>Τύπος:</b> <code>Score = Συγκοινωνία(0–30) + Απόδοση ROI(0–35) + POIs/Εστίαση/Μουσεία(0–20) + Ισορροπία Κορεσμού(0–15) − Ποινή Κινδύνων GIS(0 έως 25)</code>.
-              Συνδυάζει την απόσταση Haversine από Μετρό/POIs, το Gross ROI &amp; την Πληρότητα από τα 14.171 Airbnb, τον κορεσμό της γειτονιάς και τις ζώνες πλημμύρας/θερμικής νησίδας.
+              <b>Τύπος:</b> <code>Score = Συγκοινωνία(0–30) + Απόδοση ROI(0–35) + POIs/Εστίαση/Μουσεία(0–20) + Αγορά/QoL(0–15) − Ποινή Κινδύνων GIS(0 έως 25)</code>.
+              Το <b>4. Αγορά (0–15)</b> προκύπτει από <code>Ισορροπία Κορεσμού(0–5) + Ρευστότητα/Ζήτηση(0–5) + Eurostat QoL(0–5)</code> επί τον συντελεστή αστικής κάλυψης (<code>0.0</code> σε θάλασσα / εκτός λεκανοπεδίου).
             </p>
           </div>
         </div>
@@ -709,7 +709,7 @@
     Εργασία Εξαμήνου «Τεχνολογία Λογισμικού» ΕΜΠ 2026–2027 &bull; Έκδοση v1.0 &bull; Πηγές: Inside Airbnb, Athens GIS, Eurostat Urban Audit
   </footer>
 
-  <script src="./serverless_engine.js?v=1.2"></script>
-  <script src="./app.js?v=1.2"></script>
+  <script src="./serverless_engine.js?v=1.3"></script>
+  <script src="./app.js?v=1.3"></script>
 </body>
 </html>

@@ -107,42 +107,70 @@
     return DB_PROMISE;
   }
 
-  function detectNeighborhood(db, lat, lon) {
+  function detectNeighborhoodWithDistance(db, lat, lon) {
     const features = db.neighborhoodsGeo.features || [];
     for (const feat of features) {
       const rings = (feat.geometry && feat.geometry.coordinates) || [];
       if (rings.length && pointInPolygon(lat, lon, rings[0])) {
-        return feat.properties;
+        return { props: feat.properties, insidePolygon: true, distOutsideM: 0.0 };
       }
     }
     let bestProps = null;
-    let minDist = Infinity;
+    let minVertexDist = Infinity;
     for (const feat of features) {
       const rings = (feat.geometry && feat.geometry.coordinates) || [];
       if (!rings.length || !rings[0].length) continue;
       const ring = rings[0];
-      const cLon = ring.reduce((s, p) => s + p[0], 0) / ring.length;
-      const cLat = ring.reduce((s, p) => s + p[1], 0) / ring.length;
-      const d = haversineDistanceM(lat, lon, cLat, cLon);
-      if (d < minDist) {
-        minDist = d;
-        bestProps = feat.properties;
+      for (const pt of ring) {
+        const d = haversineDistanceM(lat, lon, pt[1], pt[0]);
+        if (d < minVertexDist) {
+          minVertexDist = d;
+          bestProps = feat.properties;
+        }
       }
     }
-    return (
-      bestProps || {
-        name: "Κέντρο Αθήνας",
-        name_en: "Central Athens",
-        population: 15000,
-        avg_purchase_price_sqm: 3200,
-        avg_long_term_rent_sqm: 12.0,
-        gentrification_trend: "Stable Urban Zone",
-      }
-    );
+    const fallback = bestProps || {
+      name: "Κέντρο Αθήνας",
+      name_en: "Central Athens",
+      population: 15000,
+      avg_purchase_price_sqm: 3200,
+      avg_long_term_rent_sqm: 12.0,
+      gentrification_trend: "Stable Urban Zone",
+    };
+    return {
+      props: fallback,
+      insidePolygon: false,
+      distOutsideM: Number(minVertexDist.toFixed(1)),
+    };
+  }
+
+  function detectNeighborhood(db, lat, lon) {
+    return detectNeighborhoodWithDistance(db, lat, lon).props;
   }
 
   function evaluateProperty(db, lat, lon, radiusM = 600, rooms = 2, acquisitionCostEur = null) {
-    const neighborhood = detectNeighborhood(db, lat, lon);
+    const {
+      props: neighborhood,
+      insidePolygon,
+      distOutsideM,
+    } = detectNeighborhoodWithDistance(db, lat, lon);
+
+    const inSaronicSea =
+      (lat < 37.943 && lon < 23.692) ||
+      (lat < 37.916 && lon < 23.726) ||
+      (lat < 37.882 && lon < 23.758) ||
+      lat < 37.85;
+    const isOutOfZone = inSaronicSea || (!insidePolygon && distOutsideM > 2800.0);
+
+    let urbanCoverageFactor = 1.0;
+    if (isOutOfZone) {
+      urbanCoverageFactor = 0.0;
+    } else if (!insidePolygon) {
+      urbanCoverageFactor = Number(
+        Math.max(0.0, 1.0 - Math.pow(distOutsideM / 2800.0, 0.85)).toFixed(3)
+      );
+    }
+
     const metroStations = [];
     const museumsList = [];
     const restaurantsList = [];
@@ -201,8 +229,16 @@
     const landmarksInCatchment = landmarksList.filter((x) => x.distance_m <= catchmentM);
 
     let estimatedDiningVenues = restHubsInCatchment.reduce((s, x) => s + x.venue_count, 0);
-    if (estimatedDiningVenues === 0 && nearestRestaurant) {
-      estimatedDiningVenues = Math.max(12, Math.floor(nearestRestaurant.venue_count * 0.5));
+    if (
+      estimatedDiningVenues === 0 &&
+      !isOutOfZone &&
+      nearestRestaurant &&
+      nearestRestaurant.distance_m <= catchmentM * 1.4
+    ) {
+      estimatedDiningVenues = Math.max(
+        6,
+        Math.round(nearestRestaurant.venue_count * 0.35 * urbanCoverageFactor)
+      );
     }
 
     const poiDistribution = {
@@ -224,10 +260,10 @@
         "Σταθμοί Μετρό & ΗΣΑΠ",
       ],
       chart_hub_counts: [
-        Math.max(1, restHubsInCatchment.length),
-        Math.max(1, museumsInCatchment.length),
-        Math.max(1, landmarksInCatchment.length),
-        Math.max(1, metrosInCatchment.length),
+        restHubsInCatchment.length,
+        museumsInCatchment.length,
+        landmarksInCatchment.length,
+        metrosInCatchment.length,
       ],
     };
 
@@ -263,158 +299,281 @@
       }
     }
 
+    allListingsWithDist.sort((a, b) => a[0] - b[0]);
+    const nearestListingDistM = allListingsWithDist.length ? allListingsWithDist[0][0] : 99999.0;
+
     let usedFallbackCompetitors = false;
     if (!nearbyListings.length) {
       usedFallbackCompetitors = true;
-      allListingsWithDist.sort((a, b) => a[0] - b[0]);
-      for (const item of allListingsWithDist.slice(0, 6)) {
-        nearbyListings.push(item[1]);
+      if (!isOutOfZone && nearestListingDistM <= 2800.0) {
+        for (const item of allListingsWithDist.slice(0, 6)) {
+          nearbyListings.push(item[1]);
+        }
       }
     }
 
-    const targetPool = sameRoomListings.length >= 2 ? sameRoomListings : nearbyListings;
-    const rawAvgAdr =
-      targetPool.reduce((s, x) => s + Number(x.price || 85), 0) / targetPool.length;
-    const nbCensusAdr = Number(neighborhood.real_avg_adr_eur || rawAvgAdr);
-    const blendedBaseAdr = 0.72 * rawAvgAdr + 0.28 * nbCensusAdr;
-
-    const avgPoolRooms =
-      targetPool.reduce((s, x) => s + Number(x.rooms || 2), 0) / targetPool.length;
-    let roomMultiplier = 1.0 + 0.28 * (rooms - avgPoolRooms);
-    roomMultiplier = Math.max(0.65, Math.min(1.85, roomMultiplier));
-
-    const estimatedAdr = Number((blendedBaseAdr * roomMultiplier).toFixed(2));
-    const avgOccupancy =
-      targetPool.reduce((s, x) => s + Number(x.occupancy_rate || 0.68), 0) / targetPool.length;
-    const avgOccupancyPct = Number((avgOccupancy * 100.0).toFixed(1));
-    const avgRating = Number(
-      (
-        targetPool.reduce((s, x) => s + Number(x.review_scores_rating || 4.8), 0) /
-        targetPool.length
-      ).toFixed(2)
-    );
-
-    const occupiedNights = Math.round(365 * avgOccupancy);
-    const estimatedAnnualGrossRevenue = Number((estimatedAdr * occupiedNights).toFixed(2));
-    const estimatedAnnualNetIncome = Number((estimatedAnnualGrossRevenue * 0.72).toFixed(2));
-
     const estimatedSqm = 32 + rooms * 24;
-    const pricePerSqm = Number(neighborhood.avg_purchase_price_sqm || 3300);
-    const effectiveAcquisitionCost =
-      acquisitionCostEur && Number(acquisitionCostEur) > 0
-        ? Number(acquisitionCostEur)
-        : Number((estimatedSqm * pricePerSqm).toFixed(2));
+    const basePricePerSqm = Number(neighborhood.avg_purchase_price_sqm || 3200);
 
-    const grossRoiPct = Number(
-      ((estimatedAnnualGrossRevenue / effectiveAcquisitionCost) * 100.0).toFixed(2)
-    );
-    const netRoiPct = Number(
-      ((estimatedAnnualNetIncome / effectiveAcquisitionCost) * 100.0).toFixed(2)
-    );
-    const paybackYears = Number(
-      (effectiveAcquisitionCost / Math.max(1.0, estimatedAnnualNetIncome)).toFixed(1)
-    );
+    let pricePerSqm = 0.0;
+    let estimatedAdr = 0.0;
+    let avgOccupancy = 0.0;
+    let avgOccupancyPct = 0.0;
+    let avgRating = 0.0;
+    let occupiedNights = 0;
+    let estimatedAnnualGrossRevenue = 0.0;
+    let estimatedAnnualNetIncome = 0.0;
+    let effectiveAcquisitionCost = 0.0;
+    let grossRoiPct = 0.0;
+    let netRoiPct = 0.0;
+    let paybackYears = 0.0;
+    let ltAnnualRevenue = 0.0;
+    let strPremiumPct = 0.0;
+    let targetPool = [];
 
-    const ltMonthlyRent = Number(
-      (estimatedSqm * Number(neighborhood.avg_long_term_rent_sqm || 12.0)).toFixed(2)
-    );
-    const ltAnnualRevenue = Number((ltMonthlyRent * 12).toFixed(2));
-    const strPremiumPct = Number(
-      (
-        ((estimatedAnnualNetIncome - ltAnnualRevenue) / Math.max(1.0, ltAnnualRevenue)) *
-        100.0
-      ).toFixed(1)
-    );
+    if (isOutOfZone || !nearbyListings.length) {
+      pricePerSqm = isOutOfZone
+        ? 0.0
+        : Math.round(basePricePerSqm * Math.max(0.5, urbanCoverageFactor));
+      effectiveAcquisitionCost =
+        acquisitionCostEur && Number(acquisitionCostEur) > 0
+          ? Number(Number(acquisitionCostEur).toFixed(2))
+          : Number((estimatedSqm * pricePerSqm).toFixed(2));
+    } else {
+      targetPool = sameRoomListings.length >= 2 ? sameRoomListings : nearbyListings;
+      const rawAvgAdr =
+        targetPool.reduce((s, x) => s + Number(x.price || 85), 0) / targetPool.length;
+      const nbCensusAdr = Number(neighborhood.real_avg_adr_eur || rawAvgAdr);
+      const blendedBaseAdr = 0.72 * rawAvgAdr + 0.28 * nbCensusAdr;
 
-    const metroDist = nearestMetro ? nearestMetro.distance_m : 1500.0;
-    const transitScore = Math.max(
-      5.0,
-      Math.min(30.0, 30.0 - Math.max(0.0, metroDist - 150.0) * 0.018)
-    );
-    const yieldScore = Math.min(
-      35.0,
-      Math.max(8.0, grossRoiPct * 1.9 + avgOccupancy * 12.0)
-    );
+      const avgPoolRooms =
+        targetPool.reduce((s, x) => s + Number(x.rooms || 2), 0) / targetPool.length;
+      let roomMultiplier = 1.0 + 0.28 * (rooms - avgPoolRooms);
+      roomMultiplier = Math.max(0.65, Math.min(1.85, roomMultiplier));
 
-    const poiDist = nearestPoi ? nearestPoi.distance_m : 1000.0;
-    const poiDensityBonus = Math.min(
-      6.0,
-      (museumsInCatchment.length +
-        restHubsInCatchment.length +
-        landmarksInCatchment.length) *
-        0.65
-    );
-    const amenityScore = Math.max(
-      6.0,
-      Math.min(20.0, 14.5 - Math.max(0.0, poiDist - 150.0) * 0.012 + poiDensityBonus)
-    );
+      const fallbackDecay = usedFallbackCompetitors
+        ? Math.max(0.35, 1.0 - Math.max(0.0, nearestListingDistM - radiusM) / 2600.0) *
+          urbanCoverageFactor
+        : urbanCoverageFactor;
 
-    const saturationRatio =
-      (Number(neighborhood.total_airbnb_listings || 600) /
-        Math.max(1.0, Number(neighborhood.population || 10000))) *
-      1000.0;
+      estimatedAdr = Number(
+        (blendedBaseAdr * roomMultiplier * (0.65 + 0.35 * fallbackDecay)).toFixed(2)
+      );
+      const rawOcc =
+        targetPool.reduce((s, x) => s + Number(x.occupancy_rate || 0.68), 0) / targetPool.length;
+      avgOccupancy = Math.max(0.1, Math.min(0.95, rawOcc * fallbackDecay));
+      avgOccupancyPct = Number((avgOccupancy * 100.0).toFixed(1));
+      avgRating = Number(
+        (
+          targetPool.reduce((s, x) => s + Number(x.review_scores_rating || 4.8), 0) /
+          targetPool.length
+        ).toFixed(2)
+      );
 
-    const priceRatio = pricePerSqm / 3250.0;
-    const landmarkDist = nearestLandmark ? nearestLandmark.distance_m : 900.0;
+      occupiedNights = Math.round(365.0 * (avgOccupancyPct / 100.0));
+      estimatedAnnualGrossRevenue = Number((estimatedAdr * occupiedNights).toFixed(2));
+      estimatedAnnualNetIncome = Number((estimatedAnnualGrossRevenue * 0.72).toFixed(2));
 
-    const qolTransitLocal = Number(
-      Math.min(
-        96.0,
-        Math.max(42.0, 69.2 + (500.0 - metroDist) * 0.032 + metrosInCatchment.length * 3.5)
-      ).toFixed(1)
-    );
-    const qolCultureLocal = Number(
-      Math.min(
-        96.0,
-        Math.max(
-          40.0,
-          55.0 + museumsInCatchment.length * 5.2 + restHubsInCatchment.length * 3.8
-        )
-      ).toFixed(1)
-    );
-    const qolSafetyLocal = Number(
-      Math.min(
-        92.0,
-        Math.max(
-          36.0,
-          54.2 + (priceRatio - 1.0) * 30.0 + Math.min(8.0, restHubsInCatchment.length * 1.4)
-        )
-      ).toFixed(1)
-    );
-    const qolGreenLocal = Number(
-      Math.min(
-        89.0,
-        Math.max(
-          22.0,
-          37.2 +
-            landmarksInCatchment.length * 7.5 +
-            Math.max(0.0, (650.0 - landmarkDist) * 0.024) -
-            (totalHazardPenalty > 0 ? 10.0 : 0.0)
-        )
-      ).toFixed(1)
-    );
-    const qolEnvQuietLocal = Number(
-      Math.min(
-        84.0,
-        Math.max(
-          20.0,
-          52.0 -
-            saturationRatio * 0.2 +
-            landmarksInCatchment.length * 3.0 -
-            totalHazardPenalty * 0.5
-        )
-      ).toFixed(1)
-    );
-    const qolCompositeScore = Number(
-      (
-        0.24 * qolTransitLocal +
-        0.2 * qolCultureLocal +
-        0.22 * qolSafetyLocal +
-        0.18 * qolGreenLocal +
-        0.16 * qolEnvQuietLocal
-      ).toFixed(1)
-    );
+      pricePerSqm = Math.round(
+        basePricePerSqm * (insidePolygon ? 1.0 : Math.max(0.7, urbanCoverageFactor))
+      );
+      effectiveAcquisitionCost =
+        acquisitionCostEur && Number(acquisitionCostEur) > 0
+          ? Number(Number(acquisitionCostEur).toFixed(2))
+          : Number((estimatedSqm * pricePerSqm).toFixed(2));
+
+      grossRoiPct = Number(
+        ((estimatedAnnualGrossRevenue / Math.max(1.0, effectiveAcquisitionCost)) * 100.0).toFixed(2)
+      );
+      netRoiPct = Number(
+        ((estimatedAnnualNetIncome / Math.max(1.0, effectiveAcquisitionCost)) * 100.0).toFixed(2)
+      );
+      paybackYears = Number(
+        (effectiveAcquisitionCost / Math.max(1.0, estimatedAnnualNetIncome)).toFixed(1)
+      );
+
+      const ltMonthlyRent = Number(
+        (
+          estimatedSqm *
+          Number(neighborhood.avg_long_term_rent_sqm || 12.0) *
+          (insidePolygon ? 1.0 : Math.max(0.7, urbanCoverageFactor))
+        ).toFixed(2)
+      );
+      ltAnnualRevenue = Number((ltMonthlyRent * 12.0).toFixed(2));
+      strPremiumPct = Number(
+        (
+          ((estimatedAnnualNetIncome - ltAnnualRevenue) / Math.max(1.0, ltAnnualRevenue)) *
+          100.0
+        ).toFixed(1)
+      );
+    }
+
+    const metroDist = nearestMetro ? nearestMetro.distance_m : 9999.0;
+    const poiDist = nearestPoi ? nearestPoi.distance_m : 9999.0;
+    const landmarkDist = nearestLandmark ? nearestLandmark.distance_m : 9999.0;
+
+    const saturationRatio = isOutOfZone
+      ? 0.0
+      : (Number(neighborhood.total_airbnb_listings || 600) /
+          Math.max(1.0, Number(neighborhood.population || 10000))) *
+        1000.0 *
+        urbanCoverageFactor;
+    const priceRatio = pricePerSqm > 0 ? pricePerSqm / 3250.0 : 0.0;
     const athensQolBaseline = 68.2;
+
+    let qolTransitLocal = 0.0;
+    let qolCultureLocal = 0.0;
+    let qolSafetyLocal = 0.0;
+    let qolGreenLocal = 0.0;
+    let qolEnvQuietLocal = 0.0;
+    let qolCompositeScore = 0.0;
+    let transitScore = 0.0;
+    let yieldScore = 0.0;
+    let amenityScore = 0.0;
+    let macroScore = 0.0;
+
+    if (!isOutOfZone) {
+      qolTransitLocal = Number(
+        Math.min(
+          96.0,
+          Math.max(
+            15.0,
+            (69.2 + (500.0 - metroDist) * 0.032 + metrosInCatchment.length * 3.5) *
+              urbanCoverageFactor
+          )
+        ).toFixed(1)
+      );
+      qolCultureLocal = Number(
+        Math.min(
+          96.0,
+          Math.max(
+            15.0,
+            (48.0 +
+              museumsInCatchment.length * 5.5 +
+              restHubsInCatchment.length * 4.0 +
+              Math.max(0.0, (700.0 - poiDist) * 0.015)) *
+              urbanCoverageFactor
+          )
+        ).toFixed(1)
+      );
+      qolSafetyLocal = Number(
+        Math.min(
+          92.0,
+          Math.max(
+            20.0,
+            (54.2 + (priceRatio - 1.0) * 28.0 + Math.min(8.0, restHubsInCatchment.length * 1.4)) *
+              urbanCoverageFactor
+          )
+        ).toFixed(1)
+      );
+      qolGreenLocal = Number(
+        Math.min(
+          89.0,
+          Math.max(
+            15.0,
+            (35.0 +
+              landmarksInCatchment.length * 7.5 +
+              Math.max(0.0, (650.0 - landmarkDist) * 0.024) -
+              (totalHazardPenalty > 0 ? 10.0 : 0.0)) *
+              urbanCoverageFactor
+          )
+        ).toFixed(1)
+      );
+      qolEnvQuietLocal = Number(
+        Math.min(
+          84.0,
+          Math.max(
+            15.0,
+            (54.0 -
+              saturationRatio * 0.21 +
+              landmarksInCatchment.length * 3.0 -
+              totalHazardPenalty * 0.5) *
+              urbanCoverageFactor
+          )
+        ).toFixed(1)
+      );
+      qolCompositeScore = Number(
+        (
+          0.24 * qolTransitLocal +
+          0.2 * qolCultureLocal +
+          0.22 * qolSafetyLocal +
+          0.18 * qolGreenLocal +
+          0.16 * qolEnvQuietLocal
+        ).toFixed(1)
+      );
+
+      let rawTransit = 0.0;
+      if (metroDist <= 150.0) {
+        rawTransit = Math.min(30.0, 28.5 + Math.min(1.5, metrosInCatchment.length * 0.5));
+      } else if (metroDist <= 1200.0) {
+        rawTransit =
+          28.5 - (metroDist - 150.0) * 0.0175 + Math.min(1.5, metrosInCatchment.length * 0.4);
+      } else if (metroDist <= 3500.0) {
+        rawTransit = Math.max(0.0, 10.1 - (metroDist - 1200.0) * 0.0044);
+      }
+      transitScore = Number(
+        Math.min(30.0, Math.max(0.0, rawTransit * urbanCoverageFactor)).toFixed(1)
+      );
+
+      const rawYield = grossRoiPct * 2.0 + avgOccupancyPct * 0.12;
+      yieldScore = Number(
+        Math.min(35.0, Math.max(0.0, rawYield * urbanCoverageFactor)).toFixed(1)
+      );
+
+      let poiProxPts = 0.0;
+      if (poiDist <= 150.0) {
+        poiProxPts = 12.0;
+      } else if (poiDist <= 2600.0) {
+        poiProxPts = Math.max(0.0, 12.0 - (poiDist - 150.0) * 0.0049);
+      }
+      const poiDensPts = Math.min(
+        8.0,
+        restHubsInCatchment.length * 1.25 +
+          museumsInCatchment.length * 1.35 +
+          landmarksInCatchment.length * 1.15 +
+          Math.min(1.8, estimatedDiningVenues / 90.0)
+      );
+      amenityScore = Number(
+        Math.min(20.0, Math.max(0.0, (poiProxPts + poiDensPts) * urbanCoverageFactor)).toFixed(1)
+      );
+
+      let satBalancePts = 0.0;
+      if (saturationRatio < 8.0) {
+        satBalancePts = 1.5 + (saturationRatio / 8.0) * 1.7;
+      } else if (saturationRatio <= 65.0) {
+        satBalancePts = 3.2 + ((65.0 - Math.abs(saturationRatio - 36.0)) / 65.0) * 1.8;
+      } else {
+        satBalancePts = Math.max(1.6, 4.2 - (saturationRatio - 65.0) * 0.015);
+      }
+
+      const activeCompCount = usedFallbackCompetitors ? 0 : nearbyListings.length;
+      const liquidityPts = Math.min(
+        5.0,
+        Math.min(1.35, priceRatio) * 2.1 + Math.min(2.9, activeCompCount * 0.16)
+      );
+      const qolPts = Math.min(5.0, Math.max(0.0, (qolCompositeScore / 100.0) * 5.5));
+      macroScore = Number(
+        Math.min(
+          15.0,
+          Math.max(0.0, (satBalancePts + liquidityPts + qolPts) * urbanCoverageFactor)
+        ).toFixed(1)
+      );
+    }
+
+    const rawScore =
+      transitScore + yieldScore + amenityScore + macroScore - totalHazardPenalty;
+    const investmentScore = Number(Math.max(0.0, Math.min(100.0, rawScore)).toFixed(1));
+
+    let ratingLabel = "C (Αυξημένο Ρίσκο / Χαμηλή Απόδοση ή Φυσικός Κίνδυνος)";
+    if (isOutOfZone) {
+      ratingLabel = "Εκτός Ζώνης Κάλυψης (Θάλασσα / Μη Αστική Περιοχή)";
+    } else if (investmentScore >= 82) {
+      ratingLabel = "A+ (Εξαιρετική Επενδυτική Ευκαιρία)";
+    } else if (investmentScore >= 70) {
+      ratingLabel = "A / B+ (Ισχυρή Απόδοση & Χαμηλός Κίνδυνος)";
+    } else if (investmentScore >= 55) {
+      ratingLabel = "B (Ισορροπημένη Επένδυση με Επιμέρους Ρίσκα)";
+    }
 
     const qualityOfLifeMetrics = {
       source_dataset:
@@ -422,12 +581,13 @@
       composite_qol_score: qolCompositeScore,
       athens_eurostat_baseline_pct: athensQolBaseline,
       vs_athens_average_diff: Number((qolCompositeScore - athensQolBaseline).toFixed(1)),
-      qol_grade:
-        qolCompositeScore >= 72
-          ? "Εξαιρετική Ποιότητα Ζωής (Top Tier)"
-          : qolCompositeScore >= 62
-          ? "Υψηλή Ποιότητα Ζωής (Άνω του Μ.Ο. Αθήνας)"
-          : "Μέτρια Αστική Ποιότητα Ζωής (Πυκνός Ιστός)",
+      qol_grade: isOutOfZone
+        ? "Εκτός Αστικής Ζώνης Δήμου Αθηναίων"
+        : qolCompositeScore >= 72
+        ? "Εξαιρετική Ποιότητα Ζωής (Top Tier)"
+        : qolCompositeScore >= 62
+        ? "Υψηλή Ποιότητα Ζωής (Άνω του Μ.Ο. Αθήνας)"
+        : "Μέτρια Αστική Ποιότητα Ζωής (Πυκνός Ιστός)",
       dimensions: [
         {
           id: "public_transport",
@@ -467,53 +627,66 @@
       ],
     };
 
-    const baseMacro =
-      saturationRatio < 80 ? 15.0 : saturationRatio < 130 ? 11.5 : 8.5;
-    const qolBonus = Math.max(-1.5, Math.min(2.0, (qolCompositeScore - 62.0) * 0.12));
-    const macroScore = Number(Math.min(15.0, Math.max(6.0, baseMacro + qolBonus)).toFixed(1));
-
-    const rawScore =
-      transitScore + yieldScore + amenityScore + macroScore - totalHazardPenalty;
-    const investmentScore = Number(Math.max(10.0, Math.min(99.0, rawScore)).toFixed(1));
-
-    let ratingLabel = "C (Αυξημένο Ρίσκο / Υψηλός Κορεσμός ή Φυσικός Κίνδυνος)";
-    if (investmentScore >= 82) {
-      ratingLabel = "A+ (Εξαιρετική Επενδυτική Ευκαιρία)";
-    } else if (investmentScore >= 70) {
-      ratingLabel = "A / B+ (Ισχυρή Απόδοση & Χαμηλός Κίνδυνος)";
-    } else if (investmentScore >= 55) {
-      ratingLabel = "B (Ισορροπημένη Επένδυση με Επιμέρους Ρίσκα)";
-    }
-
     nearbyListings.sort((a, b) => a.distance_m - b.distance_m);
+
+    let nbDisplayName = neighborhood.name || "Αθήνα";
+    let nbDisplayEn = neighborhood.name_en || "Athens";
+    let nbTotalListingsCtx = Number(neighborhood.total_airbnb_listings || 0);
+    let nbTrendCtx = neighborhood.gentrification_trend || "Stable";
+    let nbBuildingFactor = neighborhood.zone_building_factor || 3.0;
+
+    if (isOutOfZone) {
+      nbDisplayName = "Εκτός Ορίων Δήμου Αθηναίων (Θάλασσα / Εκτός Ζώνης)";
+      nbDisplayEn = "Outside Athens Municipality (Sea / Non-Urban)";
+      nbTotalListingsCtx = 0;
+      nbTrendCtx = "Μη Αστική / Θαλάσσια Περιοχή";
+      nbBuildingFactor = 0.0;
+    } else if (!insidePolygon) {
+      nbDisplayName = `Εκτός Δ. Αθηναίων (Πλησίον: ${neighborhood.name} • +${Math.round(distOutsideM)}m)`;
+      nbDisplayEn = `Near ${neighborhood.name_en}`;
+      nbTotalListingsCtx = Math.round(
+        Number(neighborhood.total_airbnb_listings || 0) * urbanCoverageFactor
+      );
+      nbTrendCtx = `Περιφερειακή Ζώνη (${neighborhood.gentrification_trend})`;
+      nbBuildingFactor = neighborhood.zone_building_factor || 2.4;
+    }
 
     const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025];
     const athensBaseIdx = [116.4, 121.0, 130.2, 145.8, 164.5, 179.2, 191.8];
-    const growthAccel = Math.min(
-      1.28,
-      Math.max(0.84, 0.86 + (priceRatio - 0.85) * 0.35 + saturationRatio / 350.0)
-    );
-    const nbPriceIndexSeries = athensBaseIdx.map((baseVal, i) =>
-      Number(
-        (
-          baseVal *
-          (0.88 + 0.12 * priceRatio) *
-          (1.0 + (growthAccel - 1.0) * (i / 6.0))
-        ).toFixed(1)
-      )
-    );
-    const idx2025 = Math.max(1.0, nbPriceIndexSeries[nbPriceIndexSeries.length - 1]);
-    const nbPriceSqmSeries = nbPriceIndexSeries.map((val) =>
-      Math.round(pricePerSqm * (val / idx2025))
-    );
-    const adrCurveFactors = [0.76, 0.58, 0.69, 0.83, 0.91, 0.96, 1.0];
-    const nbAdrSeries = adrCurveFactors.map((f) => Number((nbCensusAdr * f).toFixed(1)));
-    const nbTotalListings = Math.max(15, Number(neighborhood.total_airbnb_listings || 250));
-    const demandCurveFactors = [0.68, 0.22, 0.44, 0.76, 0.89, 0.96, 1.0];
-    const annualNights2025K = (nbTotalListings * occupiedNights * 2.1) / 1000.0;
-    const nbNightsKSeries = demandCurveFactors.map((f) =>
-      Number((annualNights2025K * f).toFixed(1))
-    );
+    let nbPriceIndexSeries = years.map(() => 0.0);
+    let nbPriceSqmSeries = years.map(() => 0);
+    let nbAdrSeries = years.map(() => 0.0);
+    let nbNightsKSeries = years.map(() => 0.0);
+
+    if (!isOutOfZone) {
+      const growthAccel = Math.min(
+        1.28,
+        Math.max(0.84, 0.86 + (priceRatio - 0.85) * 0.35 + saturationRatio / 350.0)
+      );
+      nbPriceIndexSeries = athensBaseIdx.map((baseVal, i) =>
+        Number(
+          (
+            baseVal *
+            (0.88 + 0.12 * priceRatio) *
+            (1.0 + (growthAccel - 1.0) * (i / 6.0))
+          ).toFixed(1)
+        )
+      );
+      const idx2025 = Math.max(1.0, nbPriceIndexSeries[nbPriceIndexSeries.length - 1]);
+      nbPriceSqmSeries = nbPriceIndexSeries.map((val) =>
+        Math.round(pricePerSqm * (val / idx2025))
+      );
+      const adrCurveFactors = [0.76, 0.58, 0.69, 0.83, 0.91, 0.96, 1.0];
+      const nbAdrRef =
+        Number(neighborhood.real_avg_adr_eur || estimatedAdr || 85.0) * urbanCoverageFactor;
+      nbAdrSeries = adrCurveFactors.map((f) => Number((nbAdrRef * f).toFixed(1)));
+      const nbTotalListings = Math.max(1, nbTotalListingsCtx);
+      const demandCurveFactors = [0.68, 0.22, 0.44, 0.76, 0.89, 0.96, 1.0];
+      const annualNights2025K = (nbTotalListings * occupiedNights * 2.1) / 1000.0;
+      nbNightsKSeries = demandCurveFactors.map((f) =>
+        Number((annualNights2025K * f).toFixed(1))
+      );
+    }
 
     return {
       status: "success",
@@ -526,17 +699,21 @@
         estimated_sqm: estimatedSqm,
       },
       location_context: {
-        neighbourhood: neighborhood.name,
-        neighbourhood_en: neighborhood.name_en,
-        neighbourhood_total_listings: neighborhood.total_airbnb_listings || 0,
-        gentrification_trend: neighborhood.gentrification_trend,
-        zone_building_factor: neighborhood.zone_building_factor || 3.0,
+        neighbourhood: nbDisplayName,
+        neighbourhood_en: nbDisplayEn,
+        inside_athens_polygon: insidePolygon,
+        is_out_of_zone: isOutOfZone,
+        distance_outside_boundary_m: distOutsideM,
+        urban_coverage_factor: urbanCoverageFactor,
+        neighbourhood_total_listings: nbTotalListingsCtx,
+        gentrification_trend: nbTrendCtx,
+        zone_building_factor: nbBuildingFactor,
         avg_purchase_price_sqm: pricePerSqm,
         saturation_per_1000_residents: Number(saturationRatio.toFixed(1)),
         neighborhood_index_series: {
           years: years,
-          neighbourhood: neighborhood.name,
-          neighborhood_name: neighborhood.name,
+          neighbourhood: nbDisplayName,
+          neighborhood_name: nbDisplayName,
           neighborhood_price_index_2015_100: nbPriceIndexSeries,
           athens_baseline_price_index_2015_100: athensBaseIdx,
           neighborhood_price_sqm_eur: nbPriceSqmSeries,
@@ -550,13 +727,13 @@
         score: investmentScore,
         grade: ratingLabel,
         formula:
-          "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Eurostat QoL/Αγορά(0-15) - Ποινή Κινδύνων(0 έως -25)",
+          "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Αγορά/Eurostat QoL(0-15) - Ποινή Κινδύνων(0 έως -25)",
         breakdown: {
-          transit_accessibility_score: Number(transitScore.toFixed(1)),
-          airbnb_yield_score: Number(yieldScore.toFixed(1)),
-          urban_amenities_score: Number(amenityScore.toFixed(1)),
-          macro_resilience_score: Number(macroScore.toFixed(1)),
-          neighborhood_macro_score: Number(macroScore.toFixed(1)),
+          transit_accessibility_score: transitScore,
+          airbnb_yield_score: yieldScore,
+          urban_amenities_score: amenityScore,
+          macro_resilience_score: macroScore,
+          neighborhood_macro_score: macroScore,
           quality_of_life_index: qolCompositeScore,
           natural_hazard_penalty: -totalHazardPenalty,
         },

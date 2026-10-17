@@ -512,7 +512,7 @@ function renderEvaluationView(data) {
           (r) => `
         <div>
           <div class="flex justify-between text-[11px]"><span class="text-slate-300">${r.label}</span><span class="font-bold text-white">${r.count}</span></div>
-          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-0.5"><div class="${r.cls} h-full rounded-full" style="width:${Math.max(12, r.pct)}%"></div></div>
+          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-0.5"><div class="${r.cls} h-full rounded-full" style="width:${r.pct > 0 ? Math.max(8, r.pct) : 0}%"></div></div>
         </div>`
         )
         .join("");

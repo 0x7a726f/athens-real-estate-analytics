@@ -187,7 +187,17 @@ async def run_api_functional_tests() -> None:
         f"#1 {top_pick['neighbourhood']} ({top_pick['best_room_label']}) "
         f"Score={top_pick['investment_score']}, ROI={top_pick['gross_roi_pct']}%"
     )
-    print("=== ALL 9 LAYERED API FUNCTIONAL TESTS PASSED ===\n")
+    # 10. GET /api/v1/properties/evaluate (Out-of-Zone / Saronic Sea & Zero-Discrepancy Audit)
+    status, _, sea_ev = await asgi_request(
+        app, "GET", "/api/v1/properties/evaluate?lat=37.8900&lon=23.6700&radius=600&rooms=2"
+    )
+    assert status == 200
+    assert sea_ev["location_context"]["is_out_of_zone"] is True
+    assert sea_ev["investment_rating"]["score"] == 0.0
+    assert sea_ev["investment_rating"]["breakdown"]["macro_resilience_score"] == 0.0
+    assert sea_ev["airbnb_roi_metrics"]["estimated_annual_gross_revenue_eur"] == 0.0
+    print("[PASS] 10. GET /api/v1/properties/evaluate (Saronic Sea Out-of-Zone) -> Score=0.0, Agora=0.0/15, Rev=€0.00")
+    print("=== ALL 10 LAYERED API FUNCTIONAL TESTS PASSED ===\n")
 
 
 if __name__ == "__main__":

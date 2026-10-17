@@ -88,27 +88,39 @@ class PropertyEvaluationModel:
     def __init__(self, store: UrbanDataStoreModel) -> None:
         self.store = store
 
-    def find_neighborhood(self, lat: float, lon: float) -> Dict[str, Any]:
+    def find_neighborhood_with_distance(self, lat: float, lon: float) -> Tuple[Dict[str, Any], bool, float]:
         features = self.store.neighborhoods.get("features", [])
         for feat in features:
             rings = feat.get("geometry", {}).get("coordinates", [])
             if rings and point_in_polygon(lat, lon, rings[0]):
-                return feat["properties"]
+                return feat["properties"], True, 0.0
 
         best_props: Optional[Dict[str, Any]] = None
-        min_dist = float("inf")
+        min_vertex_dist = float("inf")
         for feat in features:
             rings = feat.get("geometry", {}).get("coordinates", [])
             if not rings or not rings[0]:
                 continue
             ring = rings[0]
-            c_lon = sum(p[0] for p in ring) / len(ring)
-            c_lat = sum(p[1] for p in ring) / len(ring)
-            d = haversine_distance_m(lat, lon, c_lat, c_lon)
-            if d < min_dist:
-                min_dist = d
-                best_props = feat["properties"]
-        return best_props or {"name": "Κέντρο Αθήνας", "population": 15000, "avg_purchase_price_sqm": 3200}
+            for pt in ring:
+                d = haversine_distance_m(lat, lon, pt[1], pt[0])
+                if d < min_vertex_dist:
+                    min_vertex_dist = d
+                    best_props = feat["properties"]
+
+        fallback = best_props or {
+            "name": "Κέντρο Αθήνας",
+            "name_en": "Central Athens",
+            "population": 15000,
+            "avg_purchase_price_sqm": 3200,
+            "avg_long_term_rent_sqm": 12.0,
+            "gentrification_trend": "Stable Urban Zone",
+        }
+        return fallback, False, round(min_vertex_dist, 1)
+
+    def find_neighborhood(self, lat: float, lon: float) -> Dict[str, Any]:
+        props, _, _ = self.find_neighborhood_with_distance(lat, lon)
+        return props
 
     def evaluate(
         self,
@@ -118,7 +130,22 @@ class PropertyEvaluationModel:
         rooms: int = 2,
         acquisition_cost_eur: Optional[float] = None,
     ) -> Dict[str, Any]:
-        nb = self.find_neighborhood(lat, lon)
+        nb, inside_polygon, dist_outside_m = self.find_neighborhood_with_distance(lat, lon)
+
+        in_saronic_sea = (
+            (lat < 37.943 and lon < 23.692)
+            or (lat < 37.916 and lon < 23.726)
+            or (lat < 37.882 and lon < 23.758)
+            or (lat < 37.850)
+        )
+        is_out_of_zone = in_saronic_sea or (not inside_polygon and dist_outside_m > 2800.0)
+
+        if is_out_of_zone:
+            urban_coverage_factor = 0.0
+        elif inside_polygon:
+            urban_coverage_factor = 1.0
+        else:
+            urban_coverage_factor = round(max(0.0, 1.0 - (dist_outside_m / 2800.0) ** 0.85), 3)
 
         # 1. Athens GIS POIs (Metro, Museums, Restaurants, Landmarks)
         metros, museums, restaurants, landmarks, all_pois = [], [], [], [], []
@@ -138,6 +165,7 @@ class PropertyEvaluationModel:
                 "lines": p.get("lines", []),
                 "venue_count": int(p.get("venue_count", 1)),
                 "cuisine_profile": p.get("cuisine_profile", ""),
+                "visitors_annual": int(p.get("visitors_annual", 0)),
             }
             if cat == "metro":
                 metros.append(entry)
@@ -168,9 +196,18 @@ class PropertyEvaluationModel:
         mus_catch = [x for x in museums if x["distance_m"] <= catchment_m]
         rest_catch = [x for x in restaurants if x["distance_m"] <= catchment_m]
         land_catch = [x for x in landmarks if x["distance_m"] <= catchment_m]
-        est_venues = sum(x["venue_count"] for x in rest_catch) or (
-            max(12, int(nearest_restaurant["venue_count"] * 0.5)) if nearest_restaurant else 20
-        )
+
+        est_venues = sum(x["venue_count"] for x in rest_catch)
+        if (
+            est_venues == 0
+            and not is_out_of_zone
+            and nearest_restaurant
+            and nearest_restaurant["distance_m"] <= catchment_m * 1.4
+        ):
+            est_venues = max(
+                6,
+                round(nearest_restaurant["venue_count"] * 0.35 * urban_coverage_factor),
+            )
 
         poi_distribution = {
             "catchment_radius_m": round(catchment_m),
@@ -187,10 +224,10 @@ class PropertyEvaluationModel:
                 "Σταθμοί Μετρό & ΗΣΑΠ",
             ],
             "chart_hub_counts": [
-                max(1, len(rest_catch)),
-                max(1, len(mus_catch)),
-                max(1, len(land_catch)),
-                max(1, len(m_catch)),
+                len(rest_catch),
+                len(mus_catch),
+                len(land_catch),
+                len(m_catch),
             ],
         }
 
@@ -217,85 +254,235 @@ class PropertyEvaluationModel:
                 if int(p.get("rooms", 1)) == int(rooms):
                     same_rooms.append(p)
 
+        all_dist.sort(key=lambda x: x[0])
+        nearest_listing_dist_m = all_dist[0][0] if all_dist else 99999.0
+
         used_fallback = False
         if not nearby:
             used_fallback = True
-            all_dist.sort(key=lambda x: x[0])
-            nearby = [x[1] for x in all_dist[:6]]
-
-        pool = same_rooms if len(same_rooms) >= 2 else nearby
-        raw_adr = sum(float(x["price"]) for x in pool) / len(pool)
-        nb_adr = float(nb.get("real_avg_adr_eur", raw_adr))
-        base_adr = 0.72 * raw_adr + 0.28 * nb_adr
-        avg_rooms = sum(int(x.get("rooms", 2)) for x in pool) / len(pool)
-        mult = max(0.65, min(1.85, 1.0 + 0.28 * (rooms - avg_rooms)))
-
-        adr = round(base_adr * mult, 2)
-        occ = sum(float(x["occupancy_rate"]) for x in pool) / len(pool)
-        occ_pct = round(occ * 100.0, 1)
-        nights = round(365 * occ)
-        gross_rev = round(adr * nights, 2)
-        net_inc = round(gross_rev * 0.72, 2)
+            if not is_out_of_zone and nearest_listing_dist_m <= 2800.0:
+                nearby = [x[1] for x in all_dist[:6]]
 
         sqm = 32 + (rooms * 24)
-        price_sqm = float(nb.get("avg_purchase_price_sqm", 3300))
-        cost = (
-            float(acquisition_cost_eur)
-            if acquisition_cost_eur and acquisition_cost_eur > 0
-            else round(sqm * price_sqm, 2)
-        )
-        gross_roi = round((gross_rev / cost) * 100.0, 2)
-        net_roi = round((net_inc / cost) * 100.0, 2)
-        payback = round(cost / max(1.0, net_inc), 1)
+        base_price_sqm = float(nb.get("avg_purchase_price_sqm", 3200))
 
-        lt_annual = round(sqm * float(nb.get("avg_long_term_rent_sqm", 12.0)) * 12, 2)
-        str_prem = round(((net_inc - lt_annual) / max(1.0, lt_annual)) * 100.0, 1)
+        if is_out_of_zone or not nearby:
+            price_sqm = 0.0 if is_out_of_zone else round(base_price_sqm * max(0.5, urban_coverage_factor), 0)
+            adr = 0.0
+            occ = 0.0
+            occ_pct = 0.0
+            avg_rating = 0.0
+            nights = 0
+            gross_rev = 0.0
+            net_inc = 0.0
+            cost = float(acquisition_cost_eur) if (acquisition_cost_eur and acquisition_cost_eur > 0) else round(sqm * price_sqm, 2)
+            gross_roi = 0.0
+            net_roi = 0.0
+            payback = 0.0
+            lt_annual = 0.0
+            str_prem = 0.0
+            pool = []
+        else:
+            pool = same_rooms if len(same_rooms) >= 2 else nearby
+            raw_adr = sum(float(x["price"]) for x in pool) / len(pool)
+            nb_adr = float(nb.get("real_avg_adr_eur", raw_adr))
+            base_adr = 0.72 * raw_adr + 0.28 * nb_adr
+            avg_rooms = sum(int(x.get("rooms", 2)) for x in pool) / len(pool)
+            mult = max(0.65, min(1.85, 1.0 + 0.28 * (rooms - avg_rooms)))
 
-        # 4. Investment Score (0-100)
-        m_dist = nearest_metro["distance_m"] if nearest_metro else 1500.0
-        transit_sc = max(5.0, min(30.0, 30.0 - max(0.0, (m_dist - 150.0)) * 0.018))
-        yield_sc = min(35.0, max(8.0, (gross_roi * 1.9) + (occ * 12.0)))
-        p_dist = nearest_poi["distance_m"] if nearest_poi else 1000.0
-        poi_bonus = min(6.0, (len(mus_catch) + len(rest_catch) + len(land_catch)) * 0.65)
-        amenity_sc = max(6.0, min(20.0, 14.5 - max(0.0, (p_dist - 150.0)) * 0.012 + poi_bonus))
-        sat = float(nb.get("total_airbnb_listings", 600)) / max(1.0, float(nb.get("population", 10000))) * 1000.0
-        price_ratio = price_sqm / 3250.0
-        landmark_dist = nearest_landmark["distance_m"] if nearest_landmark else 900.0
+            fallback_decay = (
+                max(0.35, 1.0 - max(0.0, nearest_listing_dist_m - radius_m) / 2600.0) * urban_coverage_factor
+                if used_fallback
+                else urban_coverage_factor
+            )
 
-        qol_transit_local = round(
-            min(96.0, max(42.0, 69.2 + (500.0 - m_dist) * 0.032 + len(m_catch) * 3.5)), 1
+            adr = round(base_adr * mult * (0.65 + 0.35 * fallback_decay), 2)
+            raw_occ = sum(float(x["occupancy_rate"]) for x in pool) / len(pool)
+            occ = max(0.10, min(0.95, raw_occ * fallback_decay))
+            occ_pct = round(occ * 100.0, 1)
+            avg_rating = round(sum(float(x.get("review_scores_rating", 4.8)) for x in pool) / len(pool), 2)
+
+            nights = round(365.0 * (occ_pct / 100.0))
+            gross_rev = round(adr * nights, 2)
+            net_inc = round(gross_rev * 0.72, 2)
+
+            price_sqm = round(base_price_sqm * (1.0 if inside_polygon else max(0.70, urban_coverage_factor)), 0)
+            cost = (
+                round(float(acquisition_cost_eur), 2)
+                if acquisition_cost_eur and acquisition_cost_eur > 0
+                else round(sqm * price_sqm, 2)
+            )
+            gross_roi = round((gross_rev / max(1.0, cost)) * 100.0, 2)
+            net_roi = round((net_inc / max(1.0, cost)) * 100.0, 2)
+            payback = round(cost / max(1.0, net_inc), 1)
+
+            lt_monthly = round(
+                sqm * float(nb.get("avg_long_term_rent_sqm", 12.0)) * (1.0 if inside_polygon else max(0.70, urban_coverage_factor)),
+                2,
+            )
+            lt_annual = round(lt_monthly * 12.0, 2)
+            str_prem = round(((net_inc - lt_annual) / max(1.0, lt_annual)) * 100.0, 1)
+
+        # 4. Investment Score (0-100) & Eurostat Quality of Life Metrics
+        m_dist = nearest_metro["distance_m"] if nearest_metro else 9999.0
+        p_dist = nearest_poi["distance_m"] if nearest_poi else 9999.0
+        landmark_dist = nearest_landmark["distance_m"] if nearest_landmark else 9999.0
+
+        sat = (
+            0.0
+            if is_out_of_zone
+            else (
+                float(nb.get("total_airbnb_listings", 600))
+                / max(1.0, float(nb.get("population", 10000)))
+                * 1000.0
+                * urban_coverage_factor
+            )
         )
-        qol_culture_local = round(
-            min(96.0, max(40.0, 55.0 + len(mus_catch) * 5.2 + len(rest_catch) * 3.8)), 1
-        )
-        qol_safety_local = round(
-            min(92.0, max(36.0, 54.2 + (price_ratio - 1.0) * 30.0 + min(8.0, len(rest_catch) * 1.4))), 1
-        )
-        qol_green_local = round(
-            min(
-                89.0,
-                max(
-                    22.0,
-                    37.2
-                    + len(land_catch) * 7.5
-                    + max(0.0, (650.0 - landmark_dist) * 0.024)
-                    - (10.0 if penalty > 0 else 0.0),
-                ),
-            ),
-            1,
-        )
-        qol_env_quiet_local = round(
-            min(84.0, max(20.0, 52.0 - sat * 0.20 + len(land_catch) * 3.0 - penalty * 0.5)), 1
-        )
-        qol_composite_score = round(
-            0.24 * qol_transit_local
-            + 0.20 * qol_culture_local
-            + 0.22 * qol_safety_local
-            + 0.18 * qol_green_local
-            + 0.16 * qol_env_quiet_local,
-            1,
-        )
+        price_ratio = (price_sqm / 3250.0) if price_sqm > 0 else 0.0
         athens_qol_baseline = 68.2
+
+        if is_out_of_zone:
+            qol_transit_local = 0.0
+            qol_culture_local = 0.0
+            qol_safety_local = 0.0
+            qol_green_local = 0.0
+            qol_env_quiet_local = 0.0
+            qol_composite_score = 0.0
+            transit_sc = 0.0
+            yield_sc = 0.0
+            amenity_sc = 0.0
+            macro_sc = 0.0
+        else:
+            qol_transit_local = round(
+                min(
+                    96.0,
+                    max(
+                        15.0,
+                        (69.2 + (500.0 - m_dist) * 0.032 + len(m_catch) * 3.5) * urban_coverage_factor,
+                    ),
+                ),
+                1,
+            )
+            qol_culture_local = round(
+                min(
+                    96.0,
+                    max(
+                        15.0,
+                        (
+                            48.0
+                            + len(mus_catch) * 5.5
+                            + len(rest_catch) * 4.0
+                            + max(0.0, (700.0 - p_dist) * 0.015)
+                        )
+                        * urban_coverage_factor,
+                    ),
+                ),
+                1,
+            )
+            qol_safety_local = round(
+                min(
+                    92.0,
+                    max(
+                        20.0,
+                        (54.2 + (price_ratio - 1.0) * 28.0 + min(8.0, len(rest_catch) * 1.4))
+                        * urban_coverage_factor,
+                    ),
+                ),
+                1,
+            )
+            qol_green_local = round(
+                min(
+                    89.0,
+                    max(
+                        15.0,
+                        (
+                            35.0
+                            + len(land_catch) * 7.5
+                            + max(0.0, (650.0 - landmark_dist) * 0.024)
+                            - (10.0 if penalty > 0 else 0.0)
+                        )
+                        * urban_coverage_factor,
+                    ),
+                ),
+                1,
+            )
+            qol_env_quiet_local = round(
+                min(
+                    84.0,
+                    max(
+                        15.0,
+                        (54.0 - sat * 0.21 + len(land_catch) * 3.0 - penalty * 0.5) * urban_coverage_factor,
+                    ),
+                ),
+                1,
+            )
+            qol_composite_score = round(
+                0.24 * qol_transit_local
+                + 0.20 * qol_culture_local
+                + 0.22 * qol_safety_local
+                + 0.18 * qol_green_local
+                + 0.16 * qol_env_quiet_local,
+                1,
+            )
+
+            if m_dist <= 150.0:
+                raw_transit = min(30.0, 28.5 + min(1.5, len(m_catch) * 0.5))
+            elif m_dist <= 1200.0:
+                raw_transit = 28.5 - (m_dist - 150.0) * 0.0175 + min(1.5, len(m_catch) * 0.4)
+            elif m_dist <= 3500.0:
+                raw_transit = max(0.0, 10.1 - (m_dist - 1200.0) * 0.0044)
+            else:
+                raw_transit = 0.0
+            transit_sc = round(min(30.0, max(0.0, raw_transit * urban_coverage_factor)), 1)
+
+            raw_yield = (gross_roi * 2.0) + (occ_pct * 0.12)
+            yield_sc = round(min(35.0, max(0.0, raw_yield * urban_coverage_factor)), 1)
+
+            if p_dist <= 150.0:
+                poi_prox_pts = 12.0
+            elif p_dist <= 2600.0:
+                poi_prox_pts = max(0.0, 12.0 - (p_dist - 150.0) * 0.0049)
+            else:
+                poi_prox_pts = 0.0
+            poi_dens_pts = min(
+                8.0,
+                len(rest_catch) * 1.25
+                + len(mus_catch) * 1.35
+                + len(land_catch) * 1.15
+                + min(1.8, est_venues / 90.0),
+            )
+            amenity_sc = round(min(20.0, max(0.0, (poi_prox_pts + poi_dens_pts) * urban_coverage_factor)), 1)
+
+            if sat < 8.0:
+                sat_balance_pts = 1.5 + (sat / 8.0) * 1.7
+            elif sat <= 65.0:
+                sat_balance_pts = 3.2 + ((65.0 - abs(sat - 36.0)) / 65.0) * 1.8
+            else:
+                sat_balance_pts = max(1.6, 4.2 - (sat - 65.0) * 0.015)
+
+            active_comp_count = len(nearby) if not used_fallback else 0
+            liquidity_pts = min(
+                5.0,
+                (min(1.35, price_ratio) * 2.1) + min(2.9, active_comp_count * 0.16),
+            )
+            qol_pts = min(5.0, max(0.0, (qol_composite_score / 100.0) * 5.5))
+            macro_sc = round(
+                min(15.0, max(0.0, (sat_balance_pts + liquidity_pts + qol_pts) * urban_coverage_factor)),
+                1,
+            )
+
+        score = round(max(0.0, min(100.0, transit_sc + yield_sc + amenity_sc + macro_sc - penalty)), 1)
+
+        if is_out_of_zone:
+            grade = "Εκτός Ζώνης Κάλυψης (Θάλασσα / Μη Αστική Περιοχή)"
+        elif score >= 82:
+            grade = "A+ (Εξαιρετική Επενδυτική Ευκαιρία)"
+        elif score >= 70:
+            grade = "A / B+ (Ισχυρή Απόδοση & Χαμηλός Κίνδυνος)"
+        elif score >= 55:
+            grade = "B (Ισορροπημένη Επένδυση με Επιμέρους Ρίσκα)"
+        else:
+            grade = "C (Αυξημένο Ρίσκο / Χαμηλή Απόδοση ή Φυσικός Κίνδυνος)"
 
         quality_of_life_metrics = {
             "source_dataset": "Eurostat Perception Survey on Quality of Life in European Cities (urb_percep, EL001C, 2023)",
@@ -303,12 +490,16 @@ class PropertyEvaluationModel:
             "athens_eurostat_baseline_pct": athens_qol_baseline,
             "vs_athens_average_diff": round(qol_composite_score - athens_qol_baseline, 1),
             "qol_grade": (
-                "Εξαιρετική Ποιότητα Ζωής (Top Tier)"
-                if qol_composite_score >= 72
+                "Εκτός Αστικής Ζώνης Δήμου Αθηναίων"
+                if is_out_of_zone
                 else (
-                    "Υψηλή Ποιότητα Ζωής (Άνω του Μ.Ο. Αθήνας)"
-                    if qol_composite_score >= 62
-                    else "Μέτρια Αστική Ποιότητα Ζωής (Πυκνός Ιστός)"
+                    "Εξαιρετική Ποιότητα Ζωής (Top Tier)"
+                    if qol_composite_score >= 72
+                    else (
+                        "Υψηλή Ποιότητα Ζωής (Άνω του Μ.Ο. Αθήνας)"
+                        if qol_composite_score >= 62
+                        else "Μέτρια Αστική Ποιότητα Ζωής (Πυκνός Ιστός)"
+                    )
                 )
             ),
             "dimensions": [
@@ -350,46 +541,57 @@ class PropertyEvaluationModel:
             ],
         }
 
-        base_macro = 15.0 if sat < 80 else (11.5 if sat < 130 else 8.5)
-        qol_bonus = max(-1.5, min(2.0, (qol_composite_score - 62.0) * 0.12))
-        macro_sc = round(min(15.0, max(6.0, base_macro + qol_bonus)), 1)
-
-        score = round(max(10.0, min(99.0, transit_sc + yield_sc + amenity_sc + macro_sc - penalty)), 1)
-        grade = (
-            "A+ (Εξαιρετική Επενδυτική Ευκαιρία)"
-            if score >= 82
-            else "A / B+ (Ισχυρή Απόδοση & Χαμηλός Κίνδυνος)"
-            if score >= 70
-            else "B (Ισορροπημένη Επένδυση με Επιμέρους Ρίσκα)"
-            if score >= 55
-            else "C (Αυξημένο Ρίσκο / Υψηλός Κορεσμός ή Φυσικός Κίνδυνος)"
-        )
-
         nearby.sort(key=lambda x: x["distance_m"])
+
+        if is_out_of_zone:
+            nb_display_name = "Εκτός Ορίων Δήμου Αθηναίων (Θάλασσα / Εκτός Ζώνης)"
+            nb_display_en = "Outside Athens Municipality (Sea / Non-Urban)"
+            nb_total_listings_ctx = 0
+            nb_trend_ctx = "Μη Αστική / Θαλάσσια Περιοχή"
+            nb_building_factor = 0.0
+        elif not inside_polygon:
+            nb_display_name = f"Εκτός Δ. Αθηναίων (Πλησίον: {nb.get('name')} • +{round(dist_outside_m)}m)"
+            nb_display_en = f"Near {nb.get('name_en')}"
+            nb_total_listings_ctx = int(round(float(nb.get("total_airbnb_listings", 0)) * urban_coverage_factor))
+            nb_trend_ctx = f"Περιφερειακή Ζώνη ({nb.get('gentrification_trend')})"
+            nb_building_factor = nb.get("zone_building_factor", 2.4)
+        else:
+            nb_display_name = nb.get("name", "Αθήνα")
+            nb_display_en = nb.get("name_en", "Athens")
+            nb_total_listings_ctx = int(nb.get("total_airbnb_listings", 0))
+            nb_trend_ctx = nb.get("gentrification_trend", "Stable")
+            nb_building_factor = nb.get("zone_building_factor", 3.0)
 
         # 5. Dynamic Per-Neighborhood Price & Tourism Index Series (2019-2025) from Dataset Metrics
         years = [2019, 2020, 2021, 2022, 2023, 2024, 2025]
         athens_base_idx = [116.4, 121.0, 130.2, 145.8, 164.5, 179.2, 191.8]
-        growth_accel = min(1.28, max(0.84, 0.86 + (price_ratio - 0.85) * 0.35 + (sat / 350.0)))
-        nb_price_index_series = [
-            round(base_val * (0.88 + 0.12 * price_ratio) * (1.0 + (growth_accel - 1.0) * (i / 6.0)), 1)
-            for i, base_val in enumerate(athens_base_idx)
-        ]
-        idx_2025 = max(1.0, nb_price_index_series[-1])
-        nb_price_sqm_series = [
-            round(price_sqm * (val / idx_2025), 0) for val in nb_price_index_series
-        ]
-        adr_curve_factors = [0.76, 0.58, 0.69, 0.83, 0.91, 0.96, 1.00]
-        nb_adr_series = [round(nb_adr * f, 1) for f in adr_curve_factors]
-        nb_total_listings = max(15, int(nb.get("total_airbnb_listings", 250)))
-        demand_curve_factors = [0.68, 0.22, 0.44, 0.76, 0.89, 0.96, 1.00]
-        annual_nights_2025_k = (nb_total_listings * nights * 2.1) / 1000.0
-        nb_nights_k_series = [round(annual_nights_2025_k * f, 1) for f in demand_curve_factors]
+        if is_out_of_zone:
+            nb_price_index_series = [0.0 for _ in years]
+            nb_price_sqm_series = [0 for _ in years]
+            nb_adr_series = [0.0 for _ in years]
+            nb_nights_k_series = [0.0 for _ in years]
+        else:
+            growth_accel = min(1.28, max(0.84, 0.86 + (price_ratio - 0.85) * 0.35 + (sat / 350.0)))
+            nb_price_index_series = [
+                round(base_val * (0.88 + 0.12 * price_ratio) * (1.0 + (growth_accel - 1.0) * (i / 6.0)), 1)
+                for i, base_val in enumerate(athens_base_idx)
+            ]
+            idx_2025 = max(1.0, nb_price_index_series[-1])
+            nb_price_sqm_series = [
+                round(price_sqm * (val / idx_2025), 0) for val in nb_price_index_series
+            ]
+            adr_curve_factors = [0.76, 0.58, 0.69, 0.83, 0.91, 0.96, 1.00]
+            nb_adr_ref = float(nb.get("real_avg_adr_eur", adr or 85.0)) * urban_coverage_factor
+            nb_adr_series = [round(nb_adr_ref * f, 1) for f in adr_curve_factors]
+            nb_total_listings = max(1, nb_total_listings_ctx)
+            demand_curve_factors = [0.68, 0.22, 0.44, 0.76, 0.89, 0.96, 1.00]
+            annual_nights_2025_k = (nb_total_listings * nights * 2.1) / 1000.0
+            nb_nights_k_series = [round(annual_nights_2025_k * f, 1) for f in demand_curve_factors]
 
         neighborhood_index_series = {
             "years": years,
-            "neighbourhood": nb.get("name"),
-            "neighborhood_name": nb.get("name"),
+            "neighbourhood": nb_display_name,
+            "neighborhood_name": nb_display_name,
             "neighborhood_price_index_2015_100": nb_price_index_series,
             "athens_baseline_price_index_2015_100": athens_base_idx,
             "neighborhood_price_sqm_eur": nb_price_sqm_series,
@@ -402,11 +604,15 @@ class PropertyEvaluationModel:
             "architecture": "MVC (Model-View-Controller)",
             "query": {"lat": round(lat, 6), "lon": round(lon, 6), "radius_m": radius_m, "rooms": rooms, "estimated_sqm": sqm},
             "location_context": {
-                "neighbourhood": nb.get("name"),
-                "neighbourhood_en": nb.get("name_en"),
-                "neighbourhood_total_listings": nb.get("total_airbnb_listings", 0),
-                "gentrification_trend": nb.get("gentrification_trend"),
-                "zone_building_factor": nb.get("zone_building_factor", 3.0),
+                "neighbourhood": nb_display_name,
+                "neighbourhood_en": nb_display_en,
+                "inside_athens_polygon": inside_polygon,
+                "is_out_of_zone": is_out_of_zone,
+                "distance_outside_boundary_m": dist_outside_m,
+                "urban_coverage_factor": urban_coverage_factor,
+                "neighbourhood_total_listings": nb_total_listings_ctx,
+                "gentrification_trend": nb_trend_ctx,
+                "zone_building_factor": nb_building_factor,
                 "avg_purchase_price_sqm": price_sqm,
                 "saturation_per_1000_residents": round(sat, 1),
                 "neighborhood_index_series": neighborhood_index_series,
@@ -416,13 +622,13 @@ class PropertyEvaluationModel:
             "investment_rating": {
                 "score": score,
                 "grade": grade,
-                "formula": "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Eurostat QoL/Αγορά(0-15) - Ποινή Κινδύνων(0 έως -25)",
+                "formula": "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Αγορά/Eurostat QoL(0-15) - Ποινή Κινδύνων(0 έως -25)",
                 "breakdown": {
-                    "transit_accessibility_score": round(transit_sc, 1),
-                    "airbnb_yield_score": round(yield_sc, 1),
-                    "urban_amenities_score": round(amenity_sc, 1),
-                    "macro_resilience_score": round(macro_sc, 1),
-                    "neighborhood_macro_score": round(macro_sc, 1),
+                    "transit_accessibility_score": transit_sc,
+                    "airbnb_yield_score": yield_sc,
+                    "urban_amenities_score": amenity_sc,
+                    "macro_resilience_score": macro_sc,
+                    "neighborhood_macro_score": macro_sc,
                     "quality_of_life_index": qol_composite_score,
                     "natural_hazard_penalty": -penalty,
                 },
@@ -442,6 +648,7 @@ class PropertyEvaluationModel:
                 "payback_period_years": payback,
                 "long_term_annual_rent_eur": lt_annual,
                 "str_vs_long_term_premium_pct": str_prem,
+                "avg_competitor_rating": avg_rating,
                 "nearby_competitors": nearby[:8],
             },
             "gis_spatial_analysis": {
