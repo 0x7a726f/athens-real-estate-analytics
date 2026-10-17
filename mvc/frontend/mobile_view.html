@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="el" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Athens Urban Analytics v1.0 | MVC Smartphone View</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #050811; color: #f8fafc; }
+    #athensMap { height: 320px; width: 100%; border-radius: 1rem; }
+    .mobile-shell { max-width: 440px; margin: 0 auto; min-height: 100vh; background: #0b1120; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b; display: flex; flex-direction: column; padding-bottom: 72px; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .osm-dark-tiles { filter: invert(100%) hue-rotate(180deg) brightness(92%) contrast(90%); }
+  </style>
+</head>
+<body>
+
+  <!-- Dedicated Smartphone View Shell (MVC View 2) -->
+  <div class="mobile-shell shadow-2xl">
+
+    <!-- Smartphone Top App Bar -->
+    <header class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">MVC &bull; View 2: Smartphone</span>
+        </div>
+        <h1 class="text-sm font-extrabold text-white">Athens Urban Analytics</h1>
+      </div>
+      <a href="./desktop_view.html" onclick="if(!location.hostname.endsWith('github.io') && !location.pathname.endsWith('.html')){this.href='/desktop'}" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 border border-slate-700">
+        🖥️ Desktop View
+      </a>
+    </header>
+
+    <!-- Quick Sticky Score Banner -->
+    <div class="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between">
+      <div>
+        <div id="evalNeighborhoodBadge" class="text-[11px] font-bold text-cyan-300">Κουκάκι - Μακρυγιάννη</div>
+        <div id="evalLocationTitle" class="text-xs text-slate-300">37.9648, 23.7265</div>
+        <div id="evalGentrificationTrend" class="hidden"></div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-slate-400 uppercase">Score</div>
+        <div id="evalScoreValue" class="text-2xl font-extrabold text-emerald-400 leading-none">91.4</div>
+        <div id="evalGradeText" class="text-[10px] text-emerald-300 mt-0.5">A+</div>
+      </div>
+    </div>
+
+    <!-- Tab 1: Interactive Map & Pin Selector -->
+    <div id="mobileTabMap" class="tab-pane active p-3.5 space-y-3">
+      <div class="space-y-1.5">
+        <div class="relative">
+          <input
+            id="areaSearchInput"
+            type="text"
+            placeholder="🔎 Αναζήτηση περιοχής (π.χ. Νέος Κόσμος, Πετράλωνα)..."
+            oninput="handleAreaSearchInput(this.value)"
+            onkeydown="if(event.key==='Enter') triggerFirstAreaMatch()"
+            class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white"
+          />
+          <div id="areaSearchDropdown" class="hidden absolute left-0 right-0 mt-1 bg-slate-900 rounded-xl shadow-2xl border border-slate-700 z-50 max-h-52 overflow-y-auto divide-y divide-slate-800 text-xs"></div>
+        </div>
+        <select
+          id="neighborhoodSelect"
+          onchange="onSelectNeighborhoodDropdown(this.value)"
+          class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white"
+        >
+          <option value="">-- Επιλογή από τις 44 Γειτονιές Αθήνας --</option>
+        </select>
+      </div>
+
+      <div class="flex overflow-x-auto gap-1.5 pb-1">
+        <button onclick="selectTopOverallRecommendation()" class="shrink-0 text-xs px-3 py-1 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/50 font-bold">🏆 #1 Κορυφαία Επιλογή Αθήνας</button>
+        <button onclick="selectPreset(37.9648, 23.7265, 'Κουκάκι')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">📍 Κουκάκι</button>
+        <button onclick="selectPreset(37.9722, 23.7305, 'Πλάκα')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">🏛️ Πλάκα</button>
+        <button onclick="selectPreset(37.9862, 23.7368, 'Εξάρχεια')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">🎨 Εξάρχεια</button>
+        <button onclick="selectPreset(38.0012, 23.7385, 'Κυψέλη')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">🌿 Κυψέλη</button>
+        <button onclick="selectPreset(37.9575, 23.7285, 'Νέος Κόσμος')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">🏙️ Νέος Κόσμος</button>
+        <button onclick="selectPreset(37.9608, 23.7280, 'Κοίτη Ιλισού (Πλημμυρική Ζώνη GIS)')" class="shrink-0 text-xs px-3 py-1 rounded-full bg-rose-600/30 text-rose-200 border border-rose-500/40">🌊 Κοίτη Ιλισού (GIS)</button>
+      </div>
+
+      <div id="topWinnerCard" class="p-3 rounded-xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-emerald-950/40 border border-amber-500/40 text-xs">
+        <div class="text-slate-400">Υπολογισμός #1 Σημείου &amp; Βέλτιστου Διαμερίσματος...</div>
+      </div>
+
+      <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-cyan-300">🏠 Φίλτρα Airbnb Χάρτη:</span>
+          <span id="airbnbFilterSummaryBadge" class="text-[10px] text-cyan-300">1.895 δείγματα</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <select id="airbnbRoomFilter" onchange="renderAirbnbMarkersOnMap()" class="px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-[11px] text-white">
+            <option value="all">🌐 Όλα τα ΥΔ</option>
+            <option value="similar" selected>🎯 Παρόμοια (ίδια ΥΔ)</option>
+            <option value="similar_radius">🎯📍 Άμεσοι Ανταγωνιστές</option>
+            <option value="in_radius">📍 Εντός Ακτίνας</option>
+            <option value="1">🛏️ Μόνο 1 ΥΔ</option>
+            <option value="2">🛏️ Μόνο 2 ΥΔ</option>
+            <option value="3">🛏️ Μόνο 3+ ΥΔ</option>
+          </select>
+          <select id="airbnbSortFilter" onchange="renderAirbnbMarkersOnMap()" class="px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-[11px] text-white">
+            <option value="top_rated" selected>⭐ Κορυφαίες Κριτικές</option>
+            <option value="most_reviewed">🔥 100+ Κριτικές</option>
+            <option value="superhost">🏅 Superhosts</option>
+            <option value="high_roi">💎 Υψηλό Έσοδο</option>
+            <option value="budget">💰 &lt; €85/βραδιά</option>
+            <option value="luxury">👑 &gt; €150/βραδιά</option>
+            <option value="all">📋 Όλα</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="athensMap" class="border border-slate-800 shadow-lg"></div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <label class="flex items-center gap-1.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
+          <input type="checkbox" id="toggleHeatmap" checked onchange="updateMapLayers()" /> <span>Heatmap (44)</span>
+        </label>
+        <label class="flex items-center gap-1.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
+          <input type="checkbox" id="toggleAirbnb" checked onchange="updateMapLayers()" /> <span id="toggleAirbnbLabel">Airbnb (1.895)</span>
+        </label>
+        <label class="flex items-center gap-1.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
+          <input type="checkbox" id="toggleGIS" checked onchange="updateMapLayers()" /> <span>POIs &amp; Εστίαση (66)</span>
+        </label>
+        <label class="flex items-center gap-1.5 p-2 rounded-lg bg-slate-900 border border-slate-800">
+          <input type="checkbox" id="toggleHazards" checked onchange="updateMapLayers()" /> <span>Κίνδυνοι GIS</span>
+        </label>
+      </div>
+
+      <!-- Mobile Parameter Controls -->
+      <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-2.5">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-slate-400">Lat</label>
+            <input id="inputLat" type="number" step="0.0001" value="37.9648" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400">Lon</label>
+            <input id="inputLon" type="number" step="0.0001" value="23.7265" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400">Ακτίνα (m)</label>
+            <select id="inputRadius" onchange="runEvaluation()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white">
+              <option value="350">350 m</option>
+              <option value="600" selected>600 m</option>
+              <option value="1000">1000 m</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400">Υπνοδωμάτια</label>
+            <select id="inputRooms" onchange="runEvaluation()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white">
+              <option value="1">1 ΥΔ</option>
+              <option value="2" selected>2 ΥΔ</option>
+              <option value="3">3 ΥΔ</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="runEvaluation(); switchMobileTab('mobileTabRoi');" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 font-bold text-xs shadow-lg">
+          Υπολογισμός &amp; Προβολή Απόδοσης ROI &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab 2: Valuation, Airbnb ROI & GIS Hazards -->
+    <div id="mobileTabRoi" class="tab-pane p-3.5 space-y-3">
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400">Ετήσιο Έσοδο Airbnb</div>
+          <div id="kpiAnnualRevenue" class="text-base font-extrabold text-white mt-0.5"></div>
+          <div id="kpiNetIncome" class="text-[10px] text-emerald-400"></div>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400">ADR &amp; Πληρότητα</div>
+          <div id="kpiAdr" class="text-base font-extrabold text-cyan-300 mt-0.5"></div>
+          <div id="kpiOccupancy" class="text-[10px] text-slate-300"></div>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400">Απόδοση ROI</div>
+          <div id="kpiGrossRoi" class="text-base font-extrabold text-indigo-400 mt-0.5"></div>
+          <div id="kpiPayback" class="text-[10px] text-slate-300"></div>
+        </div>
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400">vs Μακροχρόνια</div>
+          <div id="kpiStrPremium" class="text-sm font-extrabold text-emerald-400 mt-0.5"></div>
+          <div id="kpiLongTermRent" class="text-[10px] text-slate-400"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-5 gap-1 text-center text-[10px]">
+        <div class="bg-slate-900 p-1.5 rounded-lg border border-slate-800"><div class="text-[8px] text-slate-400">Μετρό(30)</div><div id="scoreTransit" class="font-bold text-sky-300"></div></div>
+        <div class="bg-slate-900 p-1.5 rounded-lg border border-slate-800"><div class="text-[8px] text-slate-400">ROI(35)</div><div id="scoreYield" class="font-bold text-indigo-300"></div></div>
+        <div class="bg-slate-900 p-1.5 rounded-lg border border-slate-800"><div class="text-[8px] text-slate-400">POIs(20)</div><div id="scoreAmenity" class="font-bold text-amber-300"></div></div>
+        <div class="bg-slate-900 p-1.5 rounded-lg border border-slate-800"><div class="text-[8px] text-slate-400">Αγορά(15)</div><div id="scoreMacro" class="font-bold text-purple-300"></div></div>
+        <div class="bg-slate-900 p-1.5 rounded-lg border border-slate-800"><div class="text-[8px] text-slate-400">Κίνδ.</div><div id="scoreHazardPenalty" class="font-bold text-emerald-400"></div></div>
+      </div>
+
+      <div class="bg-slate-900/95 p-2.5 rounded-xl border border-slate-800 text-[10px] text-slate-300 space-y-1">
+        <div class="font-bold text-emerald-300">📐 Τύπος Investment Score: <code id="scoreLiveEquation" class="text-cyan-300"></code></div>
+        <div class="text-slate-400">Μετρό(30) + ROI(35) + POIs/Εστίαση(20) + Αγορά(15) − Κίνδυνοι</div>
+      </div>
+
+      <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-white">🏛️ Κοντινότερα POIs &amp; Κατανομή</span>
+          <span id="poiDiningVenuesBadge" class="text-[10px] font-bold text-amber-300"></span>
+        </div>
+        <div>🚇 Μετρό: <b id="gisNearestMetroName" class="text-sky-300"></b> (<span id="gisNearestMetroDist"></span>)</div>
+        <div>🏛️ Μουσείο: <b id="gisNearestMuseumName" class="text-purple-300"></b> (<span id="gisNearestMuseumDist"></span>)</div>
+        <div>🍽️ Εστίαση: <b id="gisNearestRestaurantName" class="text-amber-300"></b> (<span id="gisNearestRestaurantDist"></span>)</div>
+        <div>🌿 Αξιοθέατο: <b id="gisNearestLandmarkName" class="text-emerald-300"></b> (<span id="gisNearestLandmarkDist"></span>)</div>
+        <div id="poiDistributionStats" class="pt-2 border-t border-slate-800 space-y-1.5 text-[11px]"></div>
+        <div id="nearbyPoisList" class="pt-1.5 flex flex-wrap gap-1"></div>
+      </div>
+
+      <div id="hazardAlertBox" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs flex items-start gap-2.5">
+        <span id="hazardAlertIcon" class="text-base">✅</span>
+        <div>
+          <div id="hazardAlertTitle" class="font-bold text-emerald-300"></div>
+          <p id="hazardAlertDesc" class="text-slate-300 mt-0.5 text-[11px]"></p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-white">Κοντινά Airbnb</span>
+          <span id="evalCompetitorCount" class="text-[10px] text-slate-400"></span>
+        </div>
+        <table class="w-full text-left text-[11px]">
+          <tbody id="competitorsTableBody" class="divide-y divide-slate-800 text-slate-200"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 3: Eurostat & Neighborhood Charts -->
+    <div id="mobileTabCharts" class="tab-pane p-3.5 space-y-4">
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+        <h3 id="eurostatChartTitle" class="text-xs font-bold text-white mb-0.5">📈 Δείκτης Τιμών &amp; ADR ανά Περιοχή</h3>
+        <p id="eurostatChartSubtitle" class="text-[10px] text-slate-400 mb-2"></p>
+        <div class="h-52"><canvas id="eurostatChart"></canvas></div>
+      </div>
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+        <h3 class="text-xs font-bold text-white mb-2">🏙️ Top Γειτονιές Αθήνας: Έσοδο vs Κορεσμός</h3>
+        <div class="h-52"><canvas id="neighborhoodChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Saved Scenarios -->
+    <div id="mobileTabScenarios" class="tab-pane p-3.5 space-y-3">
+      <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-2">
+        <label class="text-xs font-bold text-white">Αποθήκευση Τρέχοντος Σεναρίου</label>
+        <input id="scenarioTitleInput" type="text" placeholder="Όνομα σεναρίου..." class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white" />
+        <button onclick="saveCurrentScenario()" class="w-full py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs">
+          💾 Αποθήκευση στο Χαρτοφυλάκιο
+        </button>
+      </div>
+      <div id="scenariosList" class="space-y-2"></div>
+    </div>
+
+    <!-- Smartphone Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-[440px] mx-auto bg-slate-950/95 backdrop-blur border-t border-slate-800 grid grid-cols-4 py-2 z-50 text-[11px]">
+      <button onclick="switchMobileTab('mobileTabMap')" class="flex flex-col items-center text-cyan-400 font-semibold">
+        <span class="text-base">🗺️</span><span>Χάρτης</span>
+      </button>
+      <button onclick="switchMobileTab('mobileTabRoi')" class="flex flex-col items-center text-slate-300 hover:text-cyan-400">
+        <span class="text-base">💰</span><span>ROI &amp; GIS</span>
+      </button>
+      <button onclick="switchMobileTab('mobileTabCharts')" class="flex flex-col items-center text-slate-300 hover:text-cyan-400">
+        <span class="text-base">📈</span><span>Eurostat</span>
+      </button>
+      <button onclick="switchMobileTab('mobileTabScenarios')" class="flex flex-col items-center text-slate-300 hover:text-cyan-400">
+        <span class="text-base">📁</span><span>Σενάρια</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    function switchMobileTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      if (tabId === 'mobileTabMap' && window.map) {
+        setTimeout(() => window.map.invalidateSize(), 150);
+      }
+    }
+  </script>
+  <script src="./serverless_engine.js"></script>
+  <script src="./mvc_client.js"></script>
+</body>
+</html>

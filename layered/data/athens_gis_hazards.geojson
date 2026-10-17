@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "source": "Athens GIS Repository (Category 7 - GIS: Natural Hazards & Environmental Layers)",
+    "url": "https://athensgis.gr/",
+    "license": "CC BY 4.0"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "hazard_id": "haz-flood-ilissos",
+        "name": "Ζώνη Πλημμυρικού Κινδύνου Κοίτης Ιλισού (Καλλιρρόης - Ν. Κουκάκι)",
+        "name_en": "Ilissos Riverbed Flood Risk Zone (Kallirois / S. Koukaki)",
+        "hazard_type": "flood_zone",
+        "severity": "HIGH",
+        "penalty_points": 22,
+        "recommendation": "Απαιτείται έλεγχος υγρομόνωσης υπογείου/ισογείου και ασφάλιση έναντι πλημμύρας (Πρώην κοίτη Ιλισού)."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [23.7240, 37.9585],
+          [23.7325, 37.9585],
+          [23.7325, 37.9630],
+          [23.7240, 37.9630],
+          [23.7240, 37.9585]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "hazard_id": "haz-flood-kypseli-stream",
+        "name": "Ζώνη Απορροής Πρώην Ρέματος Κυψέλης - Πατησίων",
+        "name_en": "Former Kypseli-Patision Stream Runoff Hazard Zone",
+        "hazard_type": "flood_zone",
+        "severity": "MEDIUM",
+        "penalty_points": 14,
+        "recommendation": "Περιοχή αυξημένης επιφανειακής απορροής σε ακραία καιρικά φαινόμενα. Αποφύγετε ημιυπόγεια διαμερίσματα."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [23.7295, 37.9945],
+          [23.7355, 37.9945],
+          [23.7355, 38.0005],
+          [23.7295, 38.0005],
+          [23.7295, 37.9945]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "hazard_id": "haz-heat-omonia",
+        "name": "Ζώνη Έντονης Αστικής Θερμικής Νησίδας (Εμπορικό Τρίγωνο / Ομόνοια)",
+        "name_en": "Severe Urban Heat Island Zone (Omonia - Commercial Center)",
+        "hazard_type": "thermal_island",
+        "severity": "MEDIUM",
+        "penalty_points": 10,
+        "recommendation": "Υψηλή θερμική επιβάρυνση τους θερινούς μήνες (+4.2°C). Απαραίτητη ενεργειακή αναβάθμιση & κλιματισμός inverter."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [23.7235, 37.9800],
+          [23.7315, 37.9800],
+          [23.7315, 37.9865],
+          [23.7235, 37.9865],
+          [23.7235, 37.9800]
+        ]]
+      }
+    }
+  ]
+}

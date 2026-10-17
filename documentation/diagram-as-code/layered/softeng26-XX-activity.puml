@@ -1,0 +1,49 @@
+@startuml
+title UML Activity Diagram - Χωρική Αξιολόγηση Ακινήτου & Υπολογισμός ROI (Layered Architecture)
+skinparam conditionStyle inside
+
+|Αναλυτής / Επενδυτής (UI ή CLI)|
+start
+:Επιλογή Συντεταγμένων (lat, lon) στον Χάρτη Αθήνας;
+:Ορισμός Παραμέτρων (radius_m, rooms, acquisition_cost);
+:Αποστολή HTTP GET `/api/v1/properties/evaluate`;
+
+|REST API Layer (app.py)|
+:Επικύρωση Παραμέτρων Εισόδου (lat, lon, radius, rooms);
+if (Έγκυρες Παράμετροι;) then (Όχι)
+  :Επιστροφή HTTP 400 Bad Request;
+  stop
+else (Ναι)
+  :Κλήση `SpatialAnalyticsService.evaluate_property()`;
+endif
+
+|Business Logic Layer (spatial_service.py)|
+fork
+  :Εντοπισμός Γειτονιάς μέσω Ray-Casting\n`point_in_polygon(lat, lon, neighborhoods)`;
+fork again
+  :Υπολογισμός Απόστασης Haversine από\nΣταθμούς Μετρό & Πανεπιστήμια/Σχολεία (Athens GIS);
+  :Εύρεση Κοντινότερου Μετρό (`nearest_metro`)\nκαι Κοντινότερου ΑΕΙ/Σχολείου;
+fork again
+  :Έλεγχος Ζωνών Φυσικών Κινδύνων (Athens GIS)\n(Πλημμυρικές Ζώνες Ιλισού/Κυψέλης & Θερμική Νησίδα);
+  if (Εντός Ζώνης Κινδύνου;) then (Ναι)
+    :Καταγραφή Προειδοποίησης & Υπολογισμός\n`natural_hazard_penalty` (-10 έως -22 pts);
+  else (Όχι)
+    :Ποινή Φυσικού Κινδύνου = 0;
+  endif
+fork again
+  :Ανάκτηση Καταλυμάτων Inside Airbnb\nεντός ακτίνας `d <= radius_m`;
+  :Φιλτράρισμα Ανταγωνιστών με ίδιο αριθμό ΥΔ (`rooms`);
+  :Υπολογισμός Μέσης Ημερήσιας Τιμής (`ADR`)\nκαι Μέσης Πληρότητας (`Occupancy Rate`);
+  :Υπολογισμός Ετήσιου Ακαθάριστου/Καθαρού Εσόδου,\nGross/Net ROI (%) και Υπεραπόδοσης vs Μακροχρόνιας Μίσθωσης;
+end fork
+
+:Σύνθεση Επιμέρους Δεικτών:\n`Score = Transit(30) + Yield(35) + Amenity(20) + Macro(15) - HazardPenalty`;
+:Κατάταξη Επενδυτικής Βαθμίδας (`A+`, `A`, `B`, `C`);
+
+|REST API Layer (app.py)|
+:Σειριοποίηση Αποτελεσμάτων σε JSON Response (HTTP 200);
+
+|Αναλυτής / Επενδυτής (UI ή CLI)|
+:Ανανέωση Side-Panel, Κύκλου Ακτίνας στον Χάρτη & Πίνακα Ανταγωνιστών;
+stop
+@enduml

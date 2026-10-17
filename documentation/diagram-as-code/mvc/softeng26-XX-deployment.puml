@@ -1,0 +1,39 @@
+@startuml
+title UML Deployment Diagram - Αρχιτεκτονική Model-View-Controller (MVC - softeng26-XX)
+
+node "Desktop Workstation Client" {
+  node "Desktop Web Browser" {
+    artifact "desktop_view.html\n(MVC View 1)" as View1
+  }
+}
+
+node "Smartphone Client Device (iOS / Android)" {
+  node "Mobile Web Browser" {
+    artifact "mobile_view.html\n(MVC View 2)" as View2
+  }
+}
+
+node "MVC Application Server (Python 3.13 / Uvicorn :8001)" {
+  component "MVC Router & Controller\nmvc/backend/app.py & controllers.py" as MVCCtrl
+  component "MVC Domain Models\nmvc/backend/models.py" as MVCModels
+
+  folder "mvc/data/" {
+    artifact "neighborhoods.geojson (44 Polygons)" as D1
+    artifact "airbnb_listings.geojson (345 Listings)" as D2
+    artifact "athens_gis_pois.geojson & hazards.geojson" as D3
+    artifact "eurostat_urban_audit_cache.json" as D4
+  }
+
+  MVCCtrl --> MVCModels
+  MVCModels --> D1
+  MVCModels --> D2
+  MVCModels --> D3
+  MVCModels --> D4
+}
+
+cloud "Eurostat Dissemination API (ec.europa.eu)" as EuroCloud
+
+View1 --> MVCCtrl : HTTP (:8001/desktop & /api/v1/*)
+View2 --> MVCCtrl : HTTP (:8001/mobile & /api/v1/*)
+MVCModels --> EuroCloud : HTTPS JSON-stat 2.0 (EL001C)
+@enduml

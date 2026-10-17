@@ -1,0 +1,107 @@
+@startuml
+title Data Design Diagram (Conceptual & Logical Model) - Layered Architecture (softeng26-XX)
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor #f8fafc
+  BorderColor #334155
+  ArrowColor #475569
+}
+
+package "Κατηγορία 9: Inside Airbnb Data" {
+  entity "Neighborhood (Γειτονιά Αθήνας)" as Neighborhood {
+    * neighbourhood_id : VARCHAR(64) <<PK>>
+    --
+    * name : VARCHAR(120)
+    * name_en : VARCHAR(120)
+    * population : INTEGER
+    * households : INTEGER
+    * area_km2 : DECIMAL(8,3)
+    * total_airbnb_listings : INTEGER
+    * avg_long_term_rent_sqm : DECIMAL(8,2)
+    * avg_purchase_price_sqm : DECIMAL(10,2)
+    * zone_building_factor : DECIMAL(4,2)
+    * gentrification_trend : VARCHAR(120)
+    * geometry : GEOMETRY(Polygon, 4326) <<2dsphere>>
+  }
+
+  entity "AirbnbListing (Κατάλυμα Βραχυχρόνιας Μίσθωσης)" as Listing {
+    * listing_id : VARCHAR(64) <<PK>>
+    --
+    * neighbourhood_id : VARCHAR(64) <<FK>>
+    * name : VARCHAR(255)
+    * room_type : VARCHAR(64)
+    * rooms : INTEGER
+    * accommodates : INTEGER
+    * price_adr_eur : DECIMAL(10,2)
+    * availability_365 : INTEGER
+    * occupancy_rate : DECIMAL(5,4)
+    * number_of_reviews : INTEGER
+    * reviews_per_month : DECIMAL(6,2)
+    * review_scores_rating : DECIMAL(4,2)
+    * host_is_superhost : BOOLEAN
+    * coordinates : GEOMETRY(Point, 4326) <<2dsphere>>
+  }
+}
+
+package "Κατηγορία 7: Athens GIS Repository" {
+  entity "UrbanPOI (Σημείο Ενδιαφέροντος / Υποδομή GIS)" as POI {
+    * poi_id : VARCHAR(64) <<PK>>
+    --
+    * name : VARCHAR(200)
+    * name_en : VARCHAR(200)
+    * category : ENUM('metro', 'tram', 'university', 'school', 'bank', 'hospital', 'landmark')
+    * lines_info : JSON
+    * daily_passengers : INTEGER
+    * coordinates : GEOMETRY(Point, 4326) <<2dsphere>>
+  }
+
+  entity "NaturalHazardZone (Ζώνη Φυσικού Κινδύνου GIS)" as Hazard {
+    * hazard_id : VARCHAR(64) <<PK>>
+    --
+    * name : VARCHAR(200)
+    * hazard_type : ENUM('flood_zone', 'thermal_island', 'seismic_fault')
+    * severity : ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')
+    * penalty_points : INTEGER
+    * recommendation : TEXT
+    * boundary : GEOMETRY(Polygon, 4326) <<2dsphere>>
+  }
+}
+
+package "Κατηγορία 6: Eurostat Urban Audit (urb_*)" {
+  entity "EurostatCitySeries (Μακροοικονομικοί Δείκτες Πόλης)" as EurostatCity {
+    * city_code : VARCHAR(16) <<PK>>
+    * indicator_code : VARCHAR(32) <<PK>>
+    * reference_year : INTEGER <<PK>>
+    --
+    * city_name : VARCHAR(120)
+    * dataset_id : VARCHAR(32)
+    * indicator_label : VARCHAR(255)
+    * observation_value : DECIMAL(16,4)
+    * synced_at : TIMESTAMP
+  }
+}
+
+package "Επενδυτικό Χαρτοφυλάκιο Αναλυτή" {
+  entity "InvestmentScenario (Αποθηκευμένο Σενάριο)" as Scenario {
+    * scenario_id : VARCHAR(64) <<PK>>
+    --
+    * neighbourhood_id : VARCHAR(64) <<FK>>
+    * title : VARCHAR(200)
+    * created_at : TIMESTAMP
+    * target_lat : DECIMAL(9,6)
+    * target_lon : DECIMAL(9,6)
+    * radius_m : INTEGER
+    * rooms : INTEGER
+    * acquisition_cost_eur : DECIMAL(12,2)
+    * investment_score : DECIMAL(5,2)
+    * estimated_annual_revenue_eur : DECIMAL(12,2)
+    * estimated_gross_roi_pct : DECIMAL(6,2)
+  }
+}
+
+Neighborhood ||--o{ Listing : "περιέχει καταλύματα\n(ST_Contains)"
+Neighborhood ||--o{ Scenario : "αξιολογείται σε"
+Hazard }o..o{ Scenario : "ελέγχεται χωρικά\n(Point-in-Polygon)"
+POI }o..o{ Scenario : "απόσταση Haversine\n(Nearest Neighbor)"
+EurostatCity ||..o{ Neighborhood : "μακροοικονομικό πλαίσιο\n(EL001C / EL300)"
+@enduml

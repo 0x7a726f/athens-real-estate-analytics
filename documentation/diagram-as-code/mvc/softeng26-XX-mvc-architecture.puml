@@ -1,0 +1,23 @@
+@startuml
+title Αρχιτεκτονική Model-View-Controller (MVC) - softeng26-XX
+skinparam componentStyle uml2
+
+package "Views (Δύο Ξεχωριστά Views)" {
+  [Desktop View\n(mvc/frontend/desktop/)] as DesktopView
+  [Smartphone View\n(mvc/frontend/mobile/)] as MobileView
+  [CLI Client\n(mvc/cli/)] as MVC_CLI
+}
+
+package "Controllers (Ελεγκτές & REST API)" {
+  [PropertyController\nNeighborhoodController\nMacroAuditController] as Controllers
+}
+
+package "Models (Μοντέλα Δεδομένων & Υπολογισμών)" {
+  [PropertyEvaluationModel\nNeighborhoodAnalyticsModel\nEurostatMacroModel] as Models
+}
+
+DesktopView --> Controllers : REST API JSON
+MobileView --> Controllers : REST API JSON
+MVC_CLI --> Controllers : REST API JSON
+Controllers --> Models : Ενημέρωση / Ανάκτηση
+@enduml

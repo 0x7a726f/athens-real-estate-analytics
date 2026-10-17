@@ -1,0 +1,38 @@
+@startuml
+title Αρχιτεκτονική Πολλαπλών Επιπέδων (Layered Architecture) - softeng26-XX
+skinparam componentStyle uml2
+
+package "Presentation Layer (Επίπεδο Παρουσίασης)" {
+  [Responsive Web Dashboard\n(Desktop & Smartphone UI)\nLeaflet.js + Chart.js] as WebUI
+  [Command Line Interface (CLI)\nurban_cli.py] as CLI
+}
+
+package "REST API Layer (Επίπεδο Προγραμματιστικής Διεπαφής)" {
+  [REST API v1 Router\n(layered/backend/app.py)] as APIRouter
+}
+
+package "Business Logic Layer (Επίπεδο Επιχειρησιακής Λογικής)" {
+  [SpatialAnalyticsService\nHaversine & Point-in-Polygon\nInvestment Score & ROI Engine] as SpatialService
+  [EurostatConnector\nSDMX 3.0 / JSON-stat Client] as EurostatService
+}
+
+package "Data Access Layer (Επίπεδο Πρόσβασης Δεδομένων)" {
+  [DataRepository\n(layered/backend/data_access.py)] as Repo
+}
+
+database "Πηγές Δεδομένων (layered/data/ & External APIs)" {
+  [Inside Airbnb GeoJSON/CSV] as DB_Airbnb
+  [Athens GIS POIs & Hazards GeoJSON] as DB_GIS
+  [Eurostat Urban Audit REST API (urb_*)] as API_Eurostat
+}
+
+WebUI --> APIRouter : HTTP / JSON
+CLI --> APIRouter : HTTP / JSON
+APIRouter --> SpatialService
+APIRouter --> EurostatService
+SpatialService --> Repo
+EurostatService --> Repo
+EurostatService --> API_Eurostat : HTTPS GET (JSON-stat)
+Repo --> DB_Airbnb
+Repo --> DB_GIS
+@enduml

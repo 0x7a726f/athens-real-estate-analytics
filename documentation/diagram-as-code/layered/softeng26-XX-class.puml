@@ -1,0 +1,78 @@
+@startuml
+title UML Class Diagram - Αρχιτεκτονική Πολλαπλών Επιπέδων (Layered Architecture - softeng26-XX)
+skinparam classAttributeIconSize 0
+
+package "Presentation & CLI Layer" {
+  class UrbanAnalyticsCLI {
+    + DEFAULT_API_URL : str
+    + cmd_evaluate(api_base: str, lat: float, lon: float, radius: float, rooms: int) : int
+    + cmd_neighborhoods(api_base: str) : int
+    + cmd_macro(api_base: str, city: str) : int
+    + cmd_sync(api_base: str) : int
+  }
+
+  class ResponsiveDashboardUI {
+    + API_BASE : str
+    + map : LeafletMap
+    + initLeafletMap() : void
+    + runEvaluation() : Promise<void>
+    + loadMapLayersAndNeighborhoods() : Promise<void>
+    + loadEurostatDashboard() : Promise<void>
+    + saveCurrentScenario() : Promise<void>
+  }
+}
+
+package "REST API Layer (layered/backend/app.py)" {
+  class RESTApiEndpoints {
+    + health_check(request: Request) : JSONResponse
+    + evaluate_property(request: Request) : JSONResponse
+    + neighborhoods_analytics(request: Request) : JSONResponse
+    + macro_urban_audit(request: Request) : JSONResponse
+    + handle_scenarios(request: Request) : JSONResponse
+    + admin_sync(request: Request) : JSONResponse
+    + gis_layers(request: Request) : JSONResponse
+  }
+}
+
+package "Business Logic Layer (layered/backend/)" {
+  class SpatialAnalyticsService {
+    - repo : DataRepository
+    + haversine_distance_m(lat1: float, lon1: float, lat2: float, lon2: float) : float
+    + point_in_polygon(lat: float, lon: float, polygon_coords: List) : bool
+    + detect_neighborhood(lat: float, lon: float) : Dict
+    + evaluate_property(lat: float, lon: float, radius_m: float, rooms: int, acquisition_cost_eur: float) : Dict
+    + get_neighborhoods_analytics() : Dict
+  }
+
+  class EurostatConnector {
+    - repo : DataRepository
+    + EUROSTAT_API_BASE : str
+    + get_urban_audit_data(city_code: str, attempt_live: bool) : Dict
+    + parse_jsonstat_series(raw_json: Dict) : Dict
+  }
+}
+
+package "Data Access Layer (layered/backend/data_access.py)" {
+  class DataRepository {
+    - data_dir : Path
+    - _cache : Dict[str, Any]
+    + reload_all() : Dict[str, int]
+    + get_airbnb_features() : List[Dict]
+    + get_neighborhood_features() : List[Dict]
+    + get_gis_poi_features() : List[Dict]
+    + get_gis_hazard_features() : List[Dict]
+    + get_all_geojson_layers() : Dict
+    + get_eurostat_cache() : Dict
+    + get_scenarios() : List[Dict]
+    + save_scenario(scenario_data: Dict) : Dict
+  }
+}
+
+UrbanAnalyticsCLI ..> RESTApiEndpoints : HTTP REST Calls
+ResponsiveDashboardUI ..> RESTApiEndpoints : Fetch API (JSON)
+RESTApiEndpoints --> SpatialAnalyticsService : uses
+RESTApiEndpoints --> EurostatConnector : uses
+RESTApiEndpoints --> DataRepository : uses
+SpatialAnalyticsService --> DataRepository : queries GeoJSON
+EurostatConnector --> DataRepository : reads/updates cache
+@enduml

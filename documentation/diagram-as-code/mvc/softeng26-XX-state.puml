@@ -1,0 +1,27 @@
+@startuml
+title UML State Diagram - Καταστάσεις Views & Models στην Αρχιτεκτονική MVC (softeng26-XX)
+
+[*] --> ControllerRouting : Εισερχόμενο HTTP Request (:8001)
+
+state ControllerRouting {
+  [*] --> DetectingClientView
+  DetectingClientView --> DesktopWorkstationView : Route `/desktop` ή Desktop Browser
+  DetectingClientView --> SmartphoneTouchView : Route `/mobile` ή Smartphone Browser
+
+  state DesktopWorkstationView {
+    [*] --> MultiPanelReady : Προβολή Χάρτη 12-στηλών, Side-Panel & Γραφημάτων
+    MultiPanelReady --> UpdatingModelState : Κλικ στον Χάρτη / Επιλογή Γειτονιάς
+    UpdatingModelState --> MultiPanelReady : Ενημέρωση όλων των Desktop Panels
+  }
+
+  state SmartphoneTouchView {
+    [*] --> TabMapActive : Ενεργό Tab 1: Χάρτης & Επιλογή Pin
+    TabMapActive --> TabRoiActive : Υπολογισμός & Μετάβαση στο Tab 2 (ROI & GIS)
+    TabRoiActive --> TabChartsActive : Εναλλαγή στο Tab 3 (Eurostat & Γειτονιές)
+    TabChartsActive --> TabScenariosActive : Εναλλαγή στο Tab 4 (Σενάρια)
+    TabScenariosActive --> TabMapActive : Επιλογή Αποθηκευμένου Σεναρίου
+  }
+
+  DesktopWorkstationView <--> SmartphoneTouchView : Εναλλαγή View (`/mobile` <-> `/desktop`)
+}
+@enduml

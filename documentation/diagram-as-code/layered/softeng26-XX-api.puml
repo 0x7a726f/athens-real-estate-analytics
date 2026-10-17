@@ -1,0 +1,47 @@
+@startuml
+title UML REST API Sequence & Endpoint Diagram - Layered Architecture (softeng26-XX)
+autonumber
+
+actor "Αναλυτής / Επενδυτής\n(Web UI ή CLI)" as Client
+participant "REST API Layer\n(layered/backend/app.py)" as API
+participant "SpatialAnalyticsService\n(Business Logic Layer)" as BLL
+participant "EurostatConnector\n(Integration Layer)" as Eurostat
+participant "DataRepository\n(Data Access Layer)" as DAL
+database "Inside Airbnb & Athens GIS\n(GeoJSON / MongoDB)" as Store
+cloud "Eurostat SDMX API &\nOpen-Meteo Geocoding API" as ExtAPI
+
+== 1. Χωρική Αξιολόγηση Ακινήτου & Υπολογισμός ROI ==
+Client -> API : GET /api/v1/properties/evaluate?lat=37.9648&lon=23.7265&radius=600&rooms=2
+API -> BLL : evaluate_property(lat, lon, radius_m, rooms)
+BLL -> DAL : get_neighborhood_features()
+DAL --> BLL : 44 Official Athens Neighborhood Polygons
+BLL -> DAL : get_gis_poi_features() & get_gis_hazard_features()
+DAL --> BLL : 28 Metro/Uni POIs & 3 Hazard Polygons
+BLL -> DAL : get_airbnb_features()
+DAL --> BLL : 345 Stratified Real Listings (+ 14,171 Census Stats)
+BLL --> API : Evaluation JSON (Investment Score, ADR, ROI, GIS Proximity, Hazards)
+API --> Client : HTTP 200 OK (application/json)
+
+== 2. Ανάλυση Κορεσμού Γειτονιών (Gentrification & Saturation Heatmap) ==
+Client -> API : GET /api/v1/neighborhoods/analytics
+API -> BLL : get_neighborhoods_analytics()
+BLL -> DAL : get_neighborhood_features() & get_airbnb_features()
+BLL --> API : 44 Neighborhoods with Saturation Index & Choropleth Colors
+API --> Client : HTTP 200 OK (application/json)
+
+== 3. Μακροοικονομικοί Δείκτες Eurostat Urban Audit ==
+Client -> API : GET /api/v1/macro/urban-audit?city=EL300
+API -> Eurostat : get_urban_audit_data(city_code="EL300")
+Eurostat -> ExtAPI : GET /eurostat/api/.../urb_cpop1?cities=EL001C
+ExtAPI --> Eurostat : JSON-stat 2.0 Observations
+Eurostat -> DAL : get_eurostat_cache()
+Eurostat --> API : Merged Time-Series & Mediterranean Benchmark
+API --> Client : HTTP 200 OK (application/json)
+
+== 4. Αναζήτηση Τοπωνυμίων (Athens GIS & Open-Meteo Geocoding) ==
+Client -> API : GET /api/v1/gis/geocode?q=Κολωνάκι
+API -> BLL : geocode_athens_query("Κολωνάκι")
+BLL -> ExtAPI : GET https://geocoding-api.open-meteo.com/v1/search
+BLL --> API : Matching Coordinates & Metadata
+API --> Client : HTTP 200 OK (application/json)
+@enduml

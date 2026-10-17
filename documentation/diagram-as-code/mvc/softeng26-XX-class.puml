@@ -1,0 +1,89 @@
+@startuml
+title UML Class Diagram - Αρχιτεκτονική Model-View-Controller (MVC - softeng26-XX)
+skinparam classAttributeIconSize 0
+
+package "Views (mvc/frontend/)" {
+  class DesktopBrowserView <<View 1>> {
+    + template : "desktop_view.html"
+    + layout : "12-Column Workstation Grid"
+    + renderEvaluationView(data: JSON) : void
+    + renderMapGeoJSONLayers() : void
+  }
+
+  class SmartphoneView <<View 2>> {
+    + template : "mobile_view.html"
+    + layout : "Mobile Shell with Bottom Tab Navigation"
+    + switchMobileTab(tabId: str) : void
+    + renderEvaluationView(data: JSON) : void
+  }
+
+  class MVCCliClient {
+    + DEFAULT_MVC_API : str
+    + main() : int
+  }
+}
+
+package "Controllers (mvc/backend/controllers.py)" {
+  class UrbanAnalyticsController <<Controller>> {
+    - store_model : UrbanDataStoreModel
+    - property_model : PropertyEvaluationModel
+    - neighborhood_model : NeighborhoodAnalyticsModel
+    - eurostat_model : EurostatMacroModel
+    - scenario_model : ScenarioPortfolioModel
+    + render_root_view(request: Request) : FileResponse
+    + render_desktop_view(request: Request) : FileResponse
+    + render_mobile_view(request: Request) : FileResponse
+    + api_evaluate_property(request: Request) : JSONResponse
+    + api_neighborhoods_analytics(request: Request) : JSONResponse
+    + api_macro_urban_audit(request: Request) : JSONResponse
+    + api_scenarios(request: Request) : JSONResponse
+    + api_admin_sync(request: Request) : JSONResponse
+  }
+}
+
+package "Models (mvc/backend/models.py)" {
+  class UrbanDataStoreModel <<Model>> {
+    + airbnb : Dict
+    + neighborhoods : Dict
+    + gis_pois : Dict
+    + gis_hazards : Dict
+    + eurostat : Dict
+    + scenarios : List
+    + reload() : Dict[str, int]
+  }
+
+  class PropertyEvaluationModel <<Model>> {
+    - store : UrbanDataStoreModel
+    + find_neighborhood(lat: float, lon: float) : Dict
+    + evaluate(lat: float, lon: float, radius_m: float, rooms: int, acquisition_cost_eur: float) : Dict
+  }
+
+  class NeighborhoodAnalyticsModel <<Model>> {
+    - store : UrbanDataStoreModel
+    + compute_all() : Dict
+  }
+
+  class EurostatMacroModel <<Model>> {
+    - store : UrbanDataStoreModel
+    + get_urban_audit(city_code: str, attempt_live: bool) : Dict
+  }
+
+  class ScenarioPortfolioModel <<Model>> {
+    - store : UrbanDataStoreModel
+    + list_all() : List[Dict]
+    + create(payload: Dict) : Dict
+  }
+}
+
+DesktopBrowserView ..> UrbanAnalyticsController : HTTP REST & View Requests
+SmartphoneView ..> UrbanAnalyticsController : HTTP REST & View Requests
+MVCCliClient ..> UrbanAnalyticsController : HTTP REST Calls
+UrbanAnalyticsController --> PropertyEvaluationModel
+UrbanAnalyticsController --> NeighborhoodAnalyticsModel
+UrbanAnalyticsController --> EurostatMacroModel
+UrbanAnalyticsController --> ScenarioPortfolioModel
+PropertyEvaluationModel --> UrbanDataStoreModel
+NeighborhoodAnalyticsModel --> UrbanDataStoreModel
+EurostatMacroModel --> UrbanDataStoreModel
+ScenarioPortfolioModel --> UrbanDataStoreModel
+@enduml

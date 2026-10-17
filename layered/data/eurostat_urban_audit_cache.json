@@ -1,0 +1,201 @@
+{
+  "metadata": {
+    "source": "Eurostat - City Statistics / Urban Audit (Category 6 - Statistics, datasets urb_cpop1, urb_ctour, urb_clivcon)",
+    "api_endpoint": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/urb_ctour",
+    "format": "SDMX 3.0 / JSON-stat 2.0 compatible",
+    "last_updated": "2026-10-17T10:14:00Z",
+    "eurostat_city_code_official": "EL001C (Athina - Greater City)"
+  },
+  "cities": {
+    "EL300": {
+      "city_code": "EL300",
+      "eurostat_urau_code": "EL001C1",
+      "name": "Αθήνα (Μητροπολιτική Περιοχή / Δήμος Αθηναίων)",
+      "name_en": "Athens (Greater City / Municipality)",
+      "country": "EL",
+      "summary_kpis": {
+        "population_latest": 643452,
+        "metropolitan_population": 3168846,
+        "gdp_per_capita_pps": 29800,
+        "unemployment_rate_pct": 9.4,
+        "tourism_nights_spent_millions": 16.8,
+        "yoy_tourism_growth_pct": 11.4,
+        "green_space_share_pct": 14.2,
+        "air_quality_pm25_annual": 15.8,
+        "housing_cost_overburden_pct": 31.2,
+        "macro_investment_outlook": "POSITIVE (High Tourism Yield / EU Recovery)"
+      },
+      "time_series": {
+        "years": [
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "tourist_nights_millions": [
+          11.2,
+          3.4,
+          6.8,
+          11.9,
+          14.1,
+          15.6,
+          16.8
+        ],
+        "gdp_per_capita_eur": [
+          22400,
+          19800,
+          21900,
+          24300,
+          26100,
+          27900,
+          29800
+        ],
+        "residential_price_index_2015_100": [
+          118.4,
+          123.1,
+          132.5,
+          148.2,
+          166.9,
+          181.4,
+          194.2
+        ],
+        "short_term_rental_bed_share_pct": [
+          28.5,
+          24.0,
+          29.2,
+          34.8,
+          39.5,
+          42.1,
+          44.6
+        ],
+        "employment_rate_20_64_pct": [
+          64.2,
+          61.8,
+          65.4,
+          68.9,
+          71.2,
+          73.1,
+          74.6
+        ]
+      }
+    },
+    "ES002C1": {
+      "city_code": "ES002C1",
+      "name": "Βαρκελώνη (Barcelona)",
+      "name_en": "Barcelona",
+      "country": "ES",
+      "summary_kpis": {
+        "population_latest": 1660122,
+        "gdp_per_capita_pps": 39400,
+        "tourism_nights_spent_millions": 22.4,
+        "yoy_tourism_growth_pct": 4.2,
+        "avg_gross_rental_yield_pct": 5.1,
+        "regulatory_risk": "HIGH (Strict STR License Moratorium)"
+      }
+    },
+    "PT001C1": {
+      "city_code": "PT001C1",
+      "name": "Λισαβόνα (Lisbon)",
+      "name_en": "Lisbon",
+      "country": "PT",
+      "summary_kpis": {
+        "population_latest": 548703,
+        "gdp_per_capita_pps": 36200,
+        "tourism_nights_spent_millions": 15.9,
+        "yoy_tourism_growth_pct": 6.1,
+        "avg_gross_rental_yield_pct": 5.8,
+        "regulatory_risk": "HIGH (Alojamento Local Caps)"
+      }
+    },
+    "IT001C1": {
+      "city_code": "IT001C1",
+      "name": "Ρώμη (Rome)",
+      "name_en": "Rome",
+      "country": "IT",
+      "summary_kpis": {
+        "population_latest": 2751747,
+        "gdp_per_capita_pps": 37100,
+        "tourism_nights_spent_millions": 31.5,
+        "yoy_tourism_growth_pct": 8.3,
+        "avg_gross_rental_yield_pct": 6.2,
+        "regulatory_risk": "MEDIUM"
+      }
+    }
+  },
+  "eu_Mediterranean_benchmark": [
+    {
+      "city": "Αθήνα (EL300)",
+      "avg_price_sqm_eur": 3450,
+      "gross_str_yield_pct": 8.4,
+      "tourism_growth_yoy_pct": 11.4,
+      "saturation_index": 62
+    },
+    {
+      "city": "Λισαβόνα (PT001C1)",
+      "avg_price_sqm_eur": 5650,
+      "gross_str_yield_pct": 5.8,
+      "tourism_growth_yoy_pct": 6.1,
+      "saturation_index": 84
+    },
+    {
+      "city": "Βαρκελώνη (ES002C1)",
+      "avg_price_sqm_eur": 5200,
+      "gross_str_yield_pct": 5.1,
+      "tourism_growth_yoy_pct": 4.2,
+      "saturation_index": 89
+    },
+    {
+      "city": "Ρώμη (IT001C1)",
+      "avg_price_sqm_eur": 4800,
+      "gross_str_yield_pct": 6.2,
+      "tourism_growth_yoy_pct": 8.3,
+      "saturation_index": 76
+    }
+  ],
+  "live_eurostat_sdmx_extract": {
+    "urb_cpop1_DE1001V": {
+      "dataset": "urb_cpop1",
+      "indicator": "DE1001V",
+      "label": "Population on 1 January by age groups and sex - cities and greater cities",
+      "series": {
+        "2004": 2884338,
+        "2005": 2907194,
+        "2006": 2926976,
+        "2007": 2948553,
+        "2008": 2969219,
+        "2009": 2989023,
+        "2011": 2641511,
+        "2013": 2622404
+      }
+    },
+    "urb_ctour_CR2001V": {
+      "dataset": "urb_ctour",
+      "indicator": "CR2001V",
+      "label": "Culture and tourism - cities and greater cities",
+      "series": {
+        "2004": 4793532.0,
+        "2005": 4924065.0,
+        "2006": 5458168.0,
+        "2007": 5997613.0,
+        "2008": 5632003.0
+      }
+    },
+    "urb_clivcon_SA1001V": {
+      "dataset": "urb_clivcon",
+      "indicator": "SA1001V",
+      "label": "Living conditions - cities and greater cities",
+      "series": {
+        "2004": 1306793.0,
+        "2005": 1321070.0,
+        "2006": 1365939.0,
+        "2007": 1347833.0,
+        "2008": 548808316.0,
+        "2009": 1374387.0,
+        "2011": 1423024.0
+      }
+    }
+  }
+}

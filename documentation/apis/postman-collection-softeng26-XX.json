@@ -1,0 +1,141 @@
+{
+  "info": {
+    "name": "Athens Real Estate & Urban Analytics Platform API v1.0 (softeng26-XX)",
+    "_postman_id": "a91f4c12-8b3e-4c1a-9f8e-20262027ntua",
+    "description": "Postman Collection με αυτοματοποιημένα test scripts για τα REST API endpoints (Layered :8000 & MVC :8001).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check (/api/v1/health)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('System is healthy', function () { var j = pm.response.json(); pm.expect(j.status).to.eql('healthy'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/health"
+      }
+    },
+    {
+      "name": "2. Evaluate Property - Koukaki Safe Zone (/api/v1/properties/evaluate)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Returns Investment Score and Airbnb ROI', function () {",
+              "    var j = pm.response.json();",
+              "    pm.expect(j.investment_rating.score).to.be.above(70);",
+              "    pm.expect(j.airbnb_roi_metrics.estimated_annual_gross_revenue_eur).to.be.above(10000);",
+              "    pm.expect(j.gis_spatial_analysis.is_in_hazard_zone).to.eql(false);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/properties/evaluate?lat=37.9648&lon=23.7265&radius=600&rooms=2"
+      }
+    },
+    {
+      "name": "3. Evaluate Property - Ilissos Flood Hazard Zone (/api/v1/properties/evaluate)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Detects Flood Hazard Zone Penalty', function () {",
+              "    var j = pm.response.json();",
+              "    pm.expect(j.gis_spatial_analysis.is_in_hazard_zone).to.eql(true);",
+              "    pm.expect(j.investment_rating.breakdown.natural_hazard_penalty).to.be.below(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/properties/evaluate?lat=37.9608&lon=23.7280&radius=600&rooms=2"
+      }
+    },
+    {
+      "name": "4. Neighborhoods Saturation Heatmap (/api/v1/neighborhoods/analytics)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Returns all 44 Athens neighborhoods', function () {",
+              "    var j = pm.response.json();",
+              "    pm.expect(j.total_neighborhoods).to.be.at.least(40);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/neighborhoods/analytics"
+      }
+    },
+    {
+      "name": "5. Eurostat Urban Audit Macro Indicators (/api/v1/macro/urban-audit)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/macro/urban-audit?city=EL300"
+      }
+    },
+    {
+      "name": "6. Geocoding Search (/api/v1/gis/geocode)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/gis/geocode?q=Κολωνάκι"
+      }
+    },
+    {
+      "name": "7. Create Investment Scenario (POST /api/v1/scenarios)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman Test Scenario - Koukaki 2BR\",\n  \"lat\": 37.9648,\n  \"lon\": 23.7265,\n  \"radius\": 600,\n  \"rooms\": 2,\n  \"acquisition_cost_eur\": 260000,\n  \"investment_score\": 91.4,\n  \"estimated_annual_revenue_eur\": 34850,\n  \"estimated_gross_roi_pct\": 13.4,\n  \"neighbourhood\": \"Κουκάκι - Μακρυγιάννη\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/scenarios"
+      }
+    },
+    {
+      "name": "8. Admin Sync Data Sources (POST /api/v1/admin/sync)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/admin/sync"
+      }
+    }
+  ]
+}

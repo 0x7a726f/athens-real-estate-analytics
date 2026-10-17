@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Athens Real Estate & Urban Analytics Platform API
+  version: 1.0.0
+  description: >
+    RESTful API v1 για τη χωρική και επενδυτική αξιολόγηση ακινήτων βραχυχρόνιας μίσθωσης στην Αθήνα,
+    συνδυάζοντας δεδομένα Inside Airbnb (Κατ. 9), Athens GIS Repository (Κατ. 7) και Eurostat Urban Audit (Κατ. 6).
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local Development Server
+paths:
+  /api/v1/properties/evaluate:
+    get:
+      summary: Χωρική αξιολόγηση ακινήτου, υπολογισμός ROI Airbnb και έλεγχος φυσικών κινδύνων
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            example: 37.9648
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+            example: 23.7265
+        - name: radius
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 600
+        - name: rooms
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 2
+      responses:
+        '200':
+          description: Επιτυχής αξιολόγηση σημείου (Investment Score, Airbnb ROI, GIS Proximity & Hazards)
+  /api/v1/neighborhoods/analytics:
+    get:
+      summary: Δείκτες κορεσμού (Gentrification & Saturation Heatmap) ανά γειτονιά της Αθήνας
+      responses:
+        '200':
+          description: Λίστα γειτονιών με δείκτες κορεσμού και πολύγωνα GeoJSON
+  /api/v1/macro/urban-audit:
+    get:
+      summary: Μακροοικονομικές χρονοσειρές Eurostat Urban Audit (urb_*)
+      parameters:
+        - name: city
+          in: query
+          required: false
+          schema:
+            type: string
+            default: EL300
+      responses:
+        '200':
+          description: Χρονοσειρές και KPIs πόλης από τη Eurostat
+  /api/v1/scenarios:
+    get:
+      summary: Ανάκτηση αποθηκευμένων επενδυτικών σεναρίων
+      responses:
+        '200':
+          description: Λίστα σεναρίων
+    post:
+      summary: Αποθήκευση νέου επενδυτικού σεναρίου
+      responses:
+        '201':
+          description: Το σενάριο αποθηκεύτηκε επιτυχώς
+  /api/v1/admin/sync:
+    post:
+      summary: Συγχρονισμός όλων των πηγών δεδομένων
+      responses:
+        '200':
+          description: Επιτυχής συγχρονισμός

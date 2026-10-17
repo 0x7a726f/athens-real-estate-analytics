@@ -1,0 +1,41 @@
+@startuml
+title UML Component Diagram - Αρχιτεκτονική Model-View-Controller (MVC - softeng26-XX)
+skinparam componentStyle uml2
+
+package "Views (mvc/frontend/ & mvc/cli/)" {
+  [View 1: Desktop Browser View\n(mvc/frontend/desktop_view.html)] as VDesktop
+  [View 2: Smartphone View\n(mvc/frontend/mobile_view.html)] as VMobile
+  [MVC CLI Client\n(mvc/cli/urban_mvc_cli.py)] as VCli
+}
+
+package "Controller (mvc/backend/)" {
+  interface "REST API & View Router\n(:8001)" as IMvcRouter
+  [UrbanAnalyticsController\n(mvc/backend/controllers.py)] as Ctrl
+  IMvcRouter - [Ctrl]
+}
+
+package "Models (mvc/backend/models.py)" {
+  [PropertyEvaluationModel] as MProp
+  [NeighborhoodAnalyticsModel] as MNb
+  [EurostatMacroModel] as MEuro
+  [ScenarioPortfolioModel] as MScen
+  [UrbanDataStoreModel] as MStore
+}
+
+database "mvc/data/ (GeoJSON & JSON Dumps)" as DataFiles
+
+VDesktop ..> IMvcRouter : HTTP GET /desktop & /api/v1/*
+VMobile ..> IMvcRouter : HTTP GET /mobile & /api/v1/*
+VCli ..> IMvcRouter : HTTP /api/v1/*
+
+Ctrl --> MProp
+Ctrl --> MNb
+Ctrl --> MEuro
+Ctrl --> MScen
+
+MProp --> MStore
+MNb --> MStore
+MEuro --> MStore
+MScen --> MStore
+MStore --> DataFiles
+@enduml

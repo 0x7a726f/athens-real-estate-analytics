@@ -1,0 +1,70 @@
+@startuml
+title Data Design Diagram - MVC Architecture (softeng26-XX)
+skinparam linetype ortho
+
+package "MVC Domain Models (mvc/backend/models.py)" {
+  entity "UrbanDataStoreModel" as Store {
+    * data_dir : Path
+    --
+    * airbnb : FeatureCollection (345 Real Listings)
+    * neighborhoods : FeatureCollection (44 Athens Polygons)
+    * gis_pois : FeatureCollection (28 Athens GIS POIs)
+    * gis_hazards : FeatureCollection (3 Hazard Polygons)
+    * eurostat : JSON (EL001C & EU Benchmark)
+    * scenarios : List<Scenario>
+  }
+
+  entity "PropertyEvaluationModel" as PropModel {
+    * target_lat : float
+    * target_lon : float
+    * radius_m : float
+    * rooms : int
+    --
+    * investment_score : float (0..100)
+    * grade : str
+    * average_daily_rate_eur : float
+    * occupancy_rate_pct : float
+    * estimated_annual_gross_revenue_eur : float
+    * gross_roi_yield_pct : float
+    * nearest_metro : Dict
+    * natural_hazards_detected : List
+  }
+
+  entity "NeighborhoodAnalyticsModel" as NbModel {
+    * neighbourhood_id : str <<PK>>
+    --
+    * name : str
+    * population : int
+    * total_airbnb_listings : int
+    * listings_per_1000_residents : float
+    * saturation_level : ENUM
+    * heatmap_color : str
+    * geometry : Polygon
+  }
+
+  entity "EurostatMacroModel" as MacroModel {
+    * city_code : str <<PK>>
+    --
+    * official_eurostat_code : str (EL001C)
+    * time_series : Dict
+    * live_eurostat_sdmx_extract : Dict
+    * eu_mediterranean_benchmark : List
+  }
+
+  entity "ScenarioPortfolioModel" as ScenModel {
+    * scenario_id : str <<PK>>
+    --
+    * title : str
+    * created_at : datetime
+    * lat : float
+    * lon : float
+    * investment_score : float
+    * estimated_annual_revenue_eur : float
+  }
+}
+
+Store ||--o{ PropModel : "τροφοδοτεί"
+Store ||--o{ NbModel : "τροφοδοτεί"
+Store ||--o{ MacroModel : "τροφοδοτεί"
+Store ||--o{ ScenModel : "αποθηκεύει"
+@enduml

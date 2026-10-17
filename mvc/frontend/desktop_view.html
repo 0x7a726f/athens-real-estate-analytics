@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="el" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Athens Urban Analytics v1.0 | MVC Desktop View (ΕΜΠ 2026-27)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #090d16; color: #f1f5f9; }
+    #athensMap { height: 590px; width: 100%; border-radius: 0.875rem; }
+    .glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.7); }
+    .leaflet-popup-content-wrapper { background: #0f172a; color: #f8fafc; border: 1px solid #334155; border-radius: 0.75rem; }
+    .leaflet-popup-tip { background: #0f172a; }
+    .osm-dark-tiles { filter: invert(100%) hue-rotate(180deg) brightness(92%) contrast(90%); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Desktop Workstation Bar -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-8 py-3">
+    <div class="max-w-[1680px] mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-extrabold text-slate-950 text-base shadow-lg">
+          MVC
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-lg font-bold text-white">Athens Real Estate &amp; Urban Analytics</h1>
+            <span class="text-xs font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+              MVC Architecture &bull; View 1: Desktop Browser View
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            44 Γειτονιές Inside Airbnb (14.171 Καταλύματα) &bull; Athens GIS (66 POIs: Εστιατόρια, Μουσεία, Αξιοθέατα &amp; Μετρό) &bull; Eurostat API (EL001C)
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="../../layered/frontend/index.html" onclick="if(location.port==='8001'){this.href='http://127.0.0.1:8000/'}" class="text-xs font-semibold px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 transition">
+          🏛️ Layered UI
+        </a>
+        <a href="./mobile_view.html" onclick="if(!location.hostname.endsWith('github.io') && !location.pathname.endsWith('.html')){this.href='/mobile'}" class="text-xs font-semibold px-3.5 py-2 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 border border-indigo-500/40 transition">
+          📱 Μετάβαση στο Smartphone View (/mobile)
+        </a>
+        <button id="btnSyncData" onclick="syncAllDataSources()" class="text-xs font-semibold px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          &#x21bb; Sync MVC Models
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-[1680px] w-full mx-auto px-8 py-5 space-y-6">
+
+    <!-- Control Ribbon -->
+    <section class="glass-card rounded-2xl p-4 shadow-xl grid grid-cols-12 gap-4 items-end">
+      <div class="col-span-5 space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+            🔎 Αναζήτηση &amp; Επιλογή Περιοχής Αθήνας (44 Γειτονιές)
+          </label>
+          <span class="text-[11px] text-emerald-400">Μονό ή Διπλό Κλικ στον Χάρτη</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="relative">
+            <input
+              id="areaSearchInput"
+              type="text"
+              placeholder="Αναζήτηση γειτονιάς (π.χ. Νέος Κόσμος, Πετράλωνα)..."
+              oninput="handleAreaSearchInput(this.value)"
+              onkeydown="if(event.key==='Enter') triggerFirstAreaMatch()"
+              class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:border-emerald-400 focus:outline-none"
+            />
+            <div id="areaSearchDropdown" class="hidden absolute left-0 right-0 mt-1 glass-card rounded-xl shadow-2xl border border-slate-700 z-50 max-h-60 overflow-y-auto divide-y divide-slate-800 text-xs"></div>
+          </div>
+
+          <div>
+            <select
+              id="neighborhoodSelect"
+              onchange="onSelectNeighborhoodDropdown(this.value)"
+              class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="">-- Επιλογή από τις 44 Γειτονιές Αθήνας --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 pt-0.5">
+          <button onclick="selectPreset(37.9648, 23.7265, 'Κουκάκι - Μακρυγιάννη')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">📍 Κουκάκι</button>
+          <button onclick="selectPreset(37.9722, 23.7305, 'Πλάκα - Ακρόπολη')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">🏛️ Πλάκα</button>
+          <button onclick="selectPreset(37.9862, 23.7368, 'Εξάρχεια')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">🎨 Εξάρχεια</button>
+          <button onclick="selectPreset(38.0012, 23.7385, 'Κυψέλη')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">🌿 Κυψέλη</button>
+          <button onclick="selectPreset(37.9675, 23.7445, 'Παγκράτι')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">☕ Παγκράτι</button>
+          <button onclick="selectPreset(37.9782, 23.7418, 'Κολωνάκι')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">💎 Κολωνάκι</button>
+          <button onclick="selectPreset(37.9575, 23.7285, 'Νέος Κόσμος')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">🏙️ Νέος Κόσμος</button>
+          <button onclick="selectPreset(37.9685, 23.7135, 'Πετράλωνα')" class="text-xs px-2.5 py-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40">🎭 Πετράλωνα</button>
+          <button onclick="selectPreset(37.9608, 23.7280, 'Κοίτη Ιλισού - Καλλιρρόης (Πλημμυρική Ζώνη GIS)')" title="Σημείο ελέγχου εντός της καταγεγραμμένης ζώνης πλημμυρικού κινδύνου της Κοίτης Ιλισού (Athens GIS)" class="text-xs px-2.5 py-1 rounded-lg bg-rose-600/25 hover:bg-rose-600/45 text-rose-200 border border-rose-500/40">🌊 Κοίτη Ιλισού (Πλημμυρική Ζώνη GIS)</button>
+        </div>
+      </div>
+
+      <div class="col-span-7 grid grid-cols-5 gap-3">
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Lat</label>
+          <input id="inputLat" type="number" step="0.0001" value="37.9648" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white" />
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Lon</label>
+          <input id="inputLon" type="number" step="0.0001" value="23.7265" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white" />
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Ακτίνα (m)</label>
+          <select id="inputRadius" onchange="runEvaluation()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white">
+            <option value="350">350 m</option>
+            <option value="600" selected>600 m</option>
+            <option value="1000">1000 m</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] text-slate-400 mb-1">Υπνοδωμάτια</label>
+          <select id="inputRooms" onchange="runEvaluation()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white">
+            <option value="1">1 ΥΔ (56m²)</option>
+            <option value="2" selected>2 ΥΔ (80m²)</option>
+            <option value="3">3 ΥΔ (104m²)</option>
+          </select>
+        </div>
+        <div class="flex items-end gap-1.5">
+          <button onclick="runEvaluation()" class="flex-1 py-1.5 px-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-bold text-xs">
+            Αξιολόγηση
+          </button>
+          <button onclick="selectTopOverallRecommendation()" title="Αυτόματη εύρεση και επιλογή του #1 σημείου & διαμερίσματος" class="py-1.5 px-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-emerald-400 text-slate-950 font-extrabold text-xs shrink-0">
+            🏆 #1 Επιλογή
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Investment Optimizer: #1 Spot / Neighborhood & Optimal Apartment Choice -->
+    <section class="glass-card rounded-2xl p-4 sm:p-5 shadow-xl border border-amber-500/30">
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base">🏆</span>
+            <h2 class="text-sm sm:text-base font-extrabold text-white">
+              Εύρεση Κορυφαίου Σημείου / Γειτονιάς Δήμου Αθηναίων &amp; Βέλτιστης Επιλογής Διαμερίσματος
+            </h2>
+            <span id="optTotalEvaluatedBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              Έλεγχος 44 Γειτονιών &times; 3 Τύποι Διαμερισμάτων (132 Συνδυασμοί)
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Αυτόματος υπολογισμός του σημείου και του τύπου διαμερίσματος (1 ΥΔ 56m², 2 ΥΔ 80m², 3 ΥΔ 104m²) που μεγιστοποιεί το Investment Score ή το ROI.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Κριτήριο Βελτιστοποίησης</label>
+            <select id="optStrategySelect" onchange="loadTopRecommendations()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <option value="score" selected>🏆 Μεγαλύτερο Investment Score (0–100)</option>
+              <option value="roi">📈 Μεγαλύτερο Ετήσιο ROI %</option>
+              <option value="revenue">💰 Μεγαλύτερο Καθαρό Κέρδος (€/έτος)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Επιλογή Διαμερίσματος</label>
+            <select id="optRoomsSelect" onchange="loadTopRecommendations()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <option value="auto" selected>✨ Αυτόματη Εύρεση Βέλτιστου (1, 2 ή 3 ΥΔ)</option>
+              <option value="1">🛏️ Μόνο 1 Υπνοδωμάτιο (56 m²)</option>
+              <option value="2">🛏️ Μόνο 2 Υπνοδωμάτια (80 m²)</option>
+              <option value="3">🛏️ Μόνο 3 Υπνοδωμάτια (104 m²)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-0.5">Μέγιστο Budget Κτήσης</label>
+            <select id="optBudgetSelect" onchange="loadTopRecommendations()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:border-amber-400 focus:outline-none">
+              <option value="0" selected>💎 Απεριόριστο Budget</option>
+              <option value="180000">Έως €180.000</option>
+              <option value="260000">Έως €260.000</option>
+              <option value="360000">Έως €360.000</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-12 gap-4 items-stretch">
+        <div id="topWinnerCard" class="col-span-5 p-4 rounded-xl bg-gradient-to-br from-amber-950/40 via-slate-900 to-emerald-950/40 border border-amber-500/40 flex flex-col justify-between">
+          <div class="text-xs text-slate-400">Υπολογισμός βέλτιστου σημείου &amp; διαμερίσματος...</div>
+        </div>
+        <div class="col-span-7 flex flex-col justify-between">
+          <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
+            <span>🥇 Κατάταξη Κορυφαίων Περιοχών / Σημείων Δήμου Αθηναίων (Κλικ για επιλογή στον χάρτη)</span>
+            <span class="text-[11px] text-amber-300">Βέλτιστο Διαμέρισμα ανά Περιοχή</span>
+          </div>
+          <div id="topLocationsGrid" class="grid grid-cols-3 gap-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desktop 12-Col Grid -->
+    <section class="grid grid-cols-12 gap-6 items-start">
+      <div class="col-span-7 flex flex-col gap-4">
+        <div class="glass-card rounded-2xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-bold text-white">🗺️ Διαδραστικός Χάρτης Αθήνας (MVC Desktop View)</h2>
+              <p class="text-xs text-slate-400">Κάντε <b>Μονό ή Διπλό Κλικ</b> σε οποιοδήποτε σημείο/γειτονιά του χάρτη για άμεση επιλογή</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="toggleHeatmap" checked onchange="updateMapLayers()" /> <span>44 Γειτονιές</span>
+              </label>
+              <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="toggleAirbnb" checked onchange="updateMapLayers()" /> <span id="toggleAirbnbLabel">Airbnb (1.895 / 14.171)</span>
+              </label>
+              <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="toggleGIS" checked onchange="updateMapLayers()" /> <span>POIs: Μουσεία, Εστίαση &amp; Μετρό (66)</span>
+              </label>
+              <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 cursor-pointer">
+                <input type="checkbox" id="toggleHazards" checked onchange="updateMapLayers()" /> <span>Κίνδυνοι</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Interactive Airbnb Map Filters Ribbon -->
+          <div class="mb-3 p-2.5 rounded-xl bg-slate-900/95 border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-cyan-300">🏠 Φίλτρα Airbnb Χάρτη:</span>
+              <select id="airbnbRoomFilter" onchange="renderAirbnbMarkersOnMap()" class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                <option value="all">🌐 Όλα τα Υπνοδωμάτια (1, 2, 3+ ΥΔ)</option>
+                <option value="similar" selected>🎯 Παρόμοια με την επιλογή μου (Auto: ίδια ΥΔ)</option>
+                <option value="similar_radius">🎯📍 Άμεσοι Ανταγωνιστές (Ίδια ΥΔ + Εντός Ακτίνας)</option>
+                <option value="in_radius">📍 Όλα εντός της Ακτίνας Αξιολόγησης</option>
+                <option value="1">🛏️ Μόνο 1 Υπνοδωμάτιο / Studio</option>
+                <option value="2">🛏️ Μόνο 2 Υπνοδωμάτια</option>
+                <option value="3">🛏️ Μόνο 3+ Υπνοδωμάτια / Penthouse</option>
+              </select>
+
+              <select id="airbnbSortFilter" onchange="renderAirbnbMarkersOnMap()" class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                <option value="top_rated" selected>⭐ Κορυφαίες Κριτικές (Rating ≥ 4.85 &amp; Δημοφιλή)</option>
+                <option value="most_reviewed">🔥 Περισσότερες Κριτικές (Best Sellers 100+ reviews)</option>
+                <option value="superhost">🏅 Μόνο Superhosts (Top Hosts)</option>
+                <option value="high_roi">💎 Υψηλότερο Ετήσιο Έσοδο &amp; Πληρότητα</option>
+                <option value="budget">💰 Οικονομικά / Value (&lt; €85 / βραδιά)</option>
+                <option value="luxury">👑 Luxury / Premium (&gt; €150 / βραδιά)</option>
+                <option value="all">📋 Όλα τα Καταλύματα</option>
+              </select>
+
+              <select id="airbnbLimitFilter" onchange="renderAirbnbMarkersOnMap()" class="px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                <option value="400">Top 400 pins</option>
+                <option value="800" selected>Top 800 pins</option>
+                <option value="1500">Top 1.500 pins</option>
+                <option value="2500">Όλα (1.895 pins)</option>
+              </select>
+            </div>
+            <div id="airbnbFilterSummaryBadge" class="text-[11px] font-semibold text-cyan-300 bg-cyan-950/50 border border-cyan-500/30 px-2.5 py-1 rounded-lg">
+              Φόρτωση καταλυμάτων...
+            </div>
+          </div>
+
+          <div id="athensMap" class="border border-slate-800"></div>
+          <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-emerald-500 inline-block"></span> Χαμηλός Κορεσμός (&lt;20/1k)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-yellow-500 inline-block"></span> Μέτριος (20-45/1k)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-orange-500 inline-block"></span> Υψηλός (45-90/1k)</span>
+              <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-red-500 inline-block"></span> Υπερκορεσμός (&gt;90/1k)</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> Μετρό</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span> Μουσείο</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Εστίαση</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Αξιοθέατο</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 shadow-xl">
+          <h3 class="text-sm font-bold text-white mb-3">🏠 Κοντινότερα Ανταγωνιστικά Καταλύματα Inside Airbnb</h3>
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2">Κατάλυμα</th><th>Γειτονιά</th><th>ΥΔ</th><th>ADR</th><th>Πληρότητα</th><th class="text-right">Απόσταση</th>
+              </tr>
+            </thead>
+            <tbody id="competitorsTableBody" class="divide-y divide-slate-800/60 text-slate-200"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-span-5 flex flex-col gap-4">
+        <div class="glass-card rounded-2xl p-5 shadow-xl">
+          <div class="flex items-start justify-between">
+            <div>
+              <span id="evalNeighborhoodBadge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Κουκάκι</span>
+              <h2 id="evalLocationTitle" class="text-lg font-bold text-white mt-1.5">Αξιολόγηση Ακινήτου</h2>
+              <p id="evalGentrificationTrend" class="text-xs text-slate-400 mt-0.5"></p>
+            </div>
+            <div class="text-right">
+              <div class="text-[11px] uppercase font-semibold text-slate-400">Investment Score</div>
+              <span id="evalScoreValue" class="text-3xl font-extrabold text-emerald-400">80.9</span>
+              <span class="text-xs text-slate-400">/100</span>
+              <div id="evalGradeText" class="text-[11px] text-emerald-300"></div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 grid grid-cols-5 gap-2 text-xs">
+            <div class="bg-slate-900 p-2 rounded-lg"><div class="text-[10px] text-slate-400">1. Μετρό (30)</div><div id="scoreTransit" class="font-bold text-sky-300"></div></div>
+            <div class="bg-slate-900 p-2 rounded-lg"><div class="text-[10px] text-slate-400">2. ROI (35)</div><div id="scoreYield" class="font-bold text-indigo-300"></div></div>
+            <div class="bg-slate-900 p-2 rounded-lg"><div class="text-[10px] text-slate-400">3. POIs (20)</div><div id="scoreAmenity" class="font-bold text-amber-300"></div></div>
+            <div class="bg-slate-900 p-2 rounded-lg"><div class="text-[10px] text-slate-400">4. Αγορά (15)</div><div id="scoreMacro" class="font-bold text-purple-300"></div></div>
+            <div class="bg-slate-900 p-2 rounded-lg"><div class="text-[10px] text-slate-400">5. Κίνδυνοι</div><div id="scoreHazardPenalty" class="font-bold text-emerald-400"></div></div>
+          </div>
+          <div class="mt-2.5 p-2.5 rounded-xl bg-slate-900/95 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+            <div class="flex flex-wrap items-center justify-between gap-1">
+              <span class="font-bold text-emerald-300">📐 Πώς υπολογίζεται το Investment Score (0–100):</span>
+              <code id="scoreLiveEquation" class="px-2 py-0.5 rounded bg-slate-950 text-cyan-300 font-bold border border-slate-800"></code>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              <b>Τύπος:</b> <code>Score = Συγκοινωνία(0–30) + Απόδοση ROI(0–35) + POIs/Εστίαση/Μουσεία(0–20) + Ισορροπία Κορεσμού(0–15) − Ποινή Κινδύνων GIS(0 έως 25)</code>.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white">💰 Απόδοση Βραχυχρόνιας Μίσθωσης (Inside Airbnb)</h3>
+            <span id="evalCompetitorCount" class="text-xs text-slate-400"></span>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400">Ετήσιο Έσοδο</div>
+              <div id="kpiAnnualRevenue" class="text-lg font-extrabold text-white mt-0.5"></div>
+              <div id="kpiNetIncome" class="text-[11px] text-emerald-400"></div>
+            </div>
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400">ADR &amp; Πληρότητα</div>
+              <div id="kpiAdr" class="text-lg font-extrabold text-cyan-300 mt-0.5"></div>
+              <div id="kpiOccupancy" class="text-[11px] text-slate-300"></div>
+            </div>
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+              <div class="text-[11px] text-slate-400">ROI &amp; Απόσβεση</div>
+              <div id="kpiGrossRoi" class="text-lg font-extrabold text-indigo-400 mt-0.5"></div>
+              <div id="kpiPayback" class="text-[11px] text-slate-300"></div>
+            </div>
+          </div>
+          <div class="mt-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs">
+            <span id="kpiLongTermRent" class="text-slate-300"></span>
+            <span id="kpiStrPremium" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold"></span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 shadow-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">🏛️ Κοντινότερα Places of Interest &amp; Κατανομή</h3>
+            <span id="poiCatchmentBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">Ακτίνα 1.000m</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5 text-xs">
+            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-slate-400 text-[10px] uppercase font-semibold">🚇 Κοντινότερο Μετρό</div>
+              <div id="gisNearestMetroName" class="font-bold text-sky-300 mt-0.5 truncate"></div>
+              <div id="gisNearestMetroDist" class="text-slate-300 text-[11px] mt-0.5"></div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-slate-400 text-[10px] uppercase font-semibold">🏛️ Κοντινότερο Μουσείο</div>
+              <div id="gisNearestMuseumName" class="font-bold text-purple-300 mt-0.5 truncate"></div>
+              <div id="gisNearestMuseumDist" class="text-slate-300 text-[11px] mt-0.5"></div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-slate-400 text-[10px] uppercase font-semibold">🍽️ Πιάτσα Εστιατορίων</div>
+              <div id="gisNearestRestaurantName" class="font-bold text-amber-300 mt-0.5 truncate"></div>
+              <div id="gisNearestRestaurantDist" class="text-slate-300 text-[11px] mt-0.5"></div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div class="text-slate-400 text-[10px] uppercase font-semibold">🌿 Αξιοθέατο / Πάρκο</div>
+              <div id="gisNearestLandmarkName" class="font-bold text-emerald-300 mt-0.5 truncate"></div>
+              <div id="gisNearestLandmarkDist" class="text-slate-300 text-[11px] mt-0.5"></div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-900/95 border border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-200">📊 Κατανομή Εστιατορίων, Μουσείων &amp; POIs</span>
+              <span id="poiDiningVenuesBadge" class="text-[11px] font-bold text-amber-300"></span>
+            </div>
+            <div class="grid grid-cols-12 gap-3 items-center">
+              <div class="col-span-5 h-28"><canvas id="poiDistributionChart"></canvas></div>
+              <div id="poiDistributionStats" class="col-span-7 space-y-1.5 text-[11px]"></div>
+            </div>
+            <div id="nearbyPoisList" class="pt-1.5 border-t border-slate-800 flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <div id="hazardAlertBox" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs flex items-start gap-3">
+            <span id="hazardAlertIcon" class="text-lg">✅</span>
+            <div>
+              <div id="hazardAlertTitle" class="font-bold text-emerald-300"></div>
+              <p id="hazardAlertDesc" class="text-slate-300 mt-0.5"></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="scenarioTitleInput" type="text" placeholder="Όνομα σεναρίου (MVC)..." class="flex-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white" />
+            <button onclick="saveCurrentScenario()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs">💾 Αποθήκευση</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desktop Analytics Charts & Saved Scenarios -->
+    <section class="grid grid-cols-12 gap-6 items-start">
+      <div class="col-span-5 glass-card rounded-2xl p-5 shadow-xl">
+        <h3 id="eurostatChartTitle" class="text-sm font-bold text-white mb-0.5">📈 Δείκτης Τιμών Κατοικιών &amp; ADR ανά Περιοχή vs. Αθήνα (Eurostat)</h3>
+        <p id="eurostatChartSubtitle" class="text-[11px] text-slate-400 mb-3">Δυναμική προσαρμογή βάσει της επιλεγμένης γειτονιάς (2019–2025)</p>
+        <div class="h-60"><canvas id="eurostatChart"></canvas></div>
+      </div>
+      <div class="col-span-4 glass-card rounded-2xl p-5 shadow-xl">
+        <h3 class="text-sm font-bold text-white mb-0.5">🏙️ Top 10 Γειτονιές Αθήνας: Έσοδο (€)</h3>
+        <p class="text-[11px] text-slate-400 mb-3">Πραγματικά δεδομένα 14.171 καταλυμάτων Inside Airbnb</p>
+        <div class="h-60"><canvas id="neighborhoodChart"></canvas></div>
+      </div>
+      <div class="col-span-3 glass-card rounded-2xl p-5 shadow-xl">
+        <h3 class="text-sm font-bold text-white mb-3">📁 Αποθηκευμένα Σενάρια (MVC)</h3>
+        <div id="scenariosList" class="space-y-2.5 max-h-60 overflow-y-auto"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="./serverless_engine.js"></script>
+  <script src="./mvc_client.js"></script>
+</body>
+</html>

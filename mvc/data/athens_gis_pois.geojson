@@ -1,0 +1,1264 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "source": "Athens GIS Repository (athensgis.gr - Category 7 GIS: Metro, Museums, Restaurants, Landmarks)",
+    "license": "CC BY 4.0",
+    "total_features": 66,
+    "categories": {
+      "metro": 16,
+      "museum": 15,
+      "restaurant": 20,
+      "landmark": 15
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-syntagma",
+        "name": "Σταθμός Μετρό Σύνταγμα",
+        "name_en": "Syntagma Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)",
+          "Γραμμή 3 (Μπλε)",
+          "Τραμ"
+        ],
+        "daily_passengers": 135000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7347,
+          37.9754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-acropoli",
+        "name": "Σταθμός Μετρό Ακρόπολη",
+        "name_en": "Acropolis Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 52000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7296,
+          37.9687
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-fix",
+        "name": "Σταθμός Μετρό Συγγρού-Φιξ",
+        "name_en": "Syngrou-Fix Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)",
+          "Τραμ"
+        ],
+        "daily_passengers": 58000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7262,
+          37.9643
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-neos-kosmos",
+        "name": "Σταθμός Μετρό Νέος Κόσμος",
+        "name_en": "Neos Kosmos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)",
+          "Τραμ"
+        ],
+        "daily_passengers": 39000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7285,
+          37.9577
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-monastiraki",
+        "name": "Σταθμός Μετρό Μοναστηράκι",
+        "name_en": "Monastiraki Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)",
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 96000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7256,
+          37.9761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-thiseio",
+        "name": "Σταθμός ΗΣΑΠ Θησείο",
+        "name_en": "Thiseio Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)"
+        ],
+        "daily_passengers": 34000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7208,
+          37.9767
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-petralona",
+        "name": "Σταθμός ΗΣΑΠ Πετράλωνα",
+        "name_en": "Petralona Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)"
+        ],
+        "daily_passengers": 29000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7091,
+          37.9685
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-omonia",
+        "name": "Σταθμός Μετρό Ομόνοια",
+        "name_en": "Omonia Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)",
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 88000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7282,
+          37.9841
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-victoria",
+        "name": "Σταθμός ΗΣΑΠ Βικτώρια",
+        "name_en": "Victoria Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)"
+        ],
+        "daily_passengers": 43000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7302,
+          37.9931
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-attiki",
+        "name": "Σταθμός Μετρό Αττική",
+        "name_en": "Attiki Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 1 (Πράσινη)",
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 67000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7229,
+          37.9994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-panepistimio",
+        "name": "Σταθμός Μετρό Πανεπιστήμιο",
+        "name_en": "Panepistimio Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 63000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7329,
+          37.9803
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-evangelismos",
+        "name": "Σταθμός Μετρό Ευαγγελισμός",
+        "name_en": "Evangelismos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 64000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7469,
+          37.9761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-megaro",
+        "name": "Σταθμός Μετρό Μέγαρο Μουσικής",
+        "name_en": "Megaro Moussikis Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 45000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7528,
+          37.9788
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-ampelokipoi",
+        "name": "Σταθμός Μετρό Αμπελόκηποι",
+        "name_en": "Ampelokipoi Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 49000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7574,
+          37.9871
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-kerameikos",
+        "name": "Σταθμός Μετρό Κεραμεικός",
+        "name_en": "Kerameikos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 41000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7115,
+          37.9786
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-metaxourgeio",
+        "name": "Σταθμός Μετρό Μεταξουργείο",
+        "name_en": "Metaxourgeio Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 36000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7211,
+          37.9859
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-acropolis",
+        "name": "Μουσείο Ακρόπολης",
+        "name_en": "Acropolis Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 1950000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7285,
+          37.9684
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-parthenon",
+        "name": "Αρχαιολογικός Χώρος Ακρόπολης & Παρθενώνας",
+        "name_en": "Acropolis of Athens & Parthenon",
+        "category": "museum",
+        "type_label": "Αρχαιολογικός Χώρος",
+        "visitors_annual": 3600000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7257,
+          37.9715
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-nam",
+        "name": "Εθνικό Αρχαιολογικό Μουσείο",
+        "name_en": "National Archaeological Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 750000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7327,
+          37.9891
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-emst",
+        "name": "Εθνικό Μουσείο Σύγχρονης Τέχνης (ΕΜΣΤ - Φιξ)",
+        "name_en": "National Museum of Contemporary Art (EMST)",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 280000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7258,
+          37.9639
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-cycladic",
+        "name": "Μουσείο Κυκλαδικής Τέχνης (Κολωνάκι)",
+        "name_en": "Museum of Cycladic Art",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 340000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7422,
+          37.9759
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-benaki",
+        "name": "Μουσείο Μπενάκη Ελληνικού Πολιτισμού",
+        "name_en": "Benaki Museum (Koumpari)",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 310000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7404,
+          37.976
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-benaki-pireos",
+        "name": "Μουσείο Μπενάκη Πειραιώς 138 (Γκάζι)",
+        "name_en": "Benaki Museum Pireos 138",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 210000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7102,
+          37.9736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-ancient-agora",
+        "name": "Αρχαία Αγορά της Αθήνας & Ναός Ηφαίστου",
+        "name_en": "Ancient Agora of Athens",
+        "category": "museum",
+        "type_label": "Αρχαιολογικός Χώρος",
+        "visitors_annual": 920000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7225,
+          37.9752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-roman-agora",
+        "name": "Ρωμαϊκή Αγορά & Ωρολόγιο Κυρρήστου (Πλάκα)",
+        "name_en": "Roman Agora & Tower of the Winds",
+        "category": "museum",
+        "type_label": "Αρχαιολογικός Χώρος",
+        "visitors_annual": 540000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7261,
+          37.9743
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-byzantine",
+        "name": "Βυζαντινό και Χριστιανικό Μουσείο",
+        "name_en": "Byzantine and Christian Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 265000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7453,
+          37.9739
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-national-gallery",
+        "name": "Εθνική Πινακοθήκη - Μουσείο Αλ. Σούτζου",
+        "name_en": "National Gallery of Athens",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 420000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7492,
+          37.9756
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-goulandris",
+        "name": "Ίδρυμα Βασίλη & Ελίζας Γουλανδρή (Παγκράτι)",
+        "name_en": "Basil & Elise Goulandris Foundation",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 295000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7429,
+          37.9702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-herakleidon",
+        "name": "Μουσείο Ηρακλειδών (Θησείο)",
+        "name_en": "Herakleidon Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 95000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7192,
+          37.9751
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-war",
+        "name": "Πολεμικό Μουσείο Αθηνών",
+        "name_en": "Athens War Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 180000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7444,
+          37.9753
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-technopolis",
+        "name": "Τεχνόπολη Δήμου Αθηναίων & Μουσείο Φωταερίου",
+        "name_en": "Technopolis & Industrial Gas Museum",
+        "category": "museum",
+        "type_label": "Μουσείο / Πολιτισμός",
+        "visitors_annual": 680000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7145,
+          37.9781
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-koukaki-olympiou",
+        "name": "Πεζόδρομος Γ. Ολυμπίου & Βεΐκου (Κουκάκι)",
+        "name_en": "Georgiou Olympiou & Veikou Gastronomy Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & All-Day Bars",
+        "venue_count": 48,
+        "cuisine_profile": "Bistros, Brunch, Wine Bars & Μεζεδοπωλεία"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7242,
+          37.9628
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-makrygianni",
+        "name": "Διονυσίου Αρεοπαγίτου & Μακρυγιάννη",
+        "name_en": "Makrygianni & Areopagitou Fine Dining",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Rooftops",
+        "venue_count": 36,
+        "cuisine_profile": "Fine Dining, Acropolis View Rooftops & Cafes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7289,
+          37.9678
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-plaka-mnisikleous",
+        "name": "Σκαλάκια Μνησικλέους & Αδριανού (Πλάκα)",
+        "name_en": "Mnisikleous Steps & Adrianou Tavernas",
+        "category": "restaurant",
+        "type_label": "Παραδοσιακές Ταβέρνες & Καφέ",
+        "venue_count": 64,
+        "cuisine_profile": "Ελληνική Κουζίνα, Ταβέρνες & Παραδοσιακά Καφέ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7282,
+          37.9734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-psyri-iroon",
+        "name": "Πλατεία Ηρώων & Αγ. Αναργύρων (Ψυρρή)",
+        "name_en": "Psyri Iroon Square Dining & Nightlife",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Μεζεδοπωλεία & Bars",
+        "venue_count": 78,
+        "cuisine_profile": "Μεζεδοπωλεία, Street Food, Cocktail Bars & Live Music"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7244,
+          37.9782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-agia-irini",
+        "name": "Πλατεία Αγίας Ειρήνης & Αιόλου",
+        "name_en": "Agia Irini Square All-Day Dining",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Brunch & Bars",
+        "venue_count": 54,
+        "cuisine_profile": "All-Day Cafes, Ethnic Street Food & Cocktail Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7279,
+          37.9772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kolokotroni",
+        "name": "Εμπορικό Τρίγωνο (Κολοκοτρώνη, Πραξιτέλους, Λέκκα)",
+        "name_en": "Commercial Triangle Gastronomy & Bar District",
+        "category": "restaurant",
+        "type_label": "Gastronomy & World Top-50 Bars",
+        "venue_count": 85,
+        "cuisine_profile": "Gastro-Taverns, Wine Bars & Award-Winning Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7308,
+          37.9779
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-syntagma-mitropoleos",
+        "name": "Μητροπόλεως, Νίκης & Απόλλωνος (Σύνταγμα)",
+        "name_en": "Mitropoleos & Nikis Food Street",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & World Cuisine",
+        "venue_count": 62,
+        "cuisine_profile": "Modern Greek, Asian Fusion, Brunch & Wine Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7325,
+          37.9748
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-pangrati-varnava",
+        "name": "Πλατεία Βαρνάβα & Αρχελάου (Παγκράτι)",
+        "name_en": "Varnava Square & Archelaou Dining Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Wine Bars",
+        "venue_count": 56,
+        "cuisine_profile": "New-Age Tavermas, Italian Bistros, Bakeries & Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7448,
+          37.9675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-pangrati-proskopon",
+        "name": "Πλατεία Προσκόπων & Αμύντα (Παγκράτι)",
+        "name_en": "Proskopon Square Bistro District",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Bistros",
+        "venue_count": 38,
+        "cuisine_profile": "Artisan Bistros, Craft Beer & Classic Restaurants"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7438,
+          37.9714
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kolonaki-tsakalof",
+        "name": "Πλατεία Φιλικής Εταιρείας, Τσακάλωφ & Πατριάρχου Ιωακείμ",
+        "name_en": "Kolonaki Fine Dining & Cafe District",
+        "category": "restaurant",
+        "type_label": "Fine Dining & Champagne Bars",
+        "venue_count": 68,
+        "cuisine_profile": "High-End Restaurants, Sushi, Bistros & Espresso Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7416,
+          37.9776
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kolonaki-dexameni",
+        "name": "Πλατεία Δεξαμενής & Σκουφά (Κολωνάκι)",
+        "name_en": "Dexameni & Skoufa Cafes & Restaurants",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Καφέ",
+        "venue_count": 42,
+        "cuisine_profile": "All-Day Bistros, Wine Bars & Open-Air Ouzeri"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7442,
+          37.9798
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-exarcheia-kallidromiou",
+        "name": "Καλλιδρομίου, Βαλτετσίου & Εμμ. Μπενάκη (Εξάρχεια)",
+        "name_en": "Exarcheia Kallidromiou & Valtetsiou Dining",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Μεζεδοπωλεία & Bars",
+        "venue_count": 65,
+        "cuisine_profile": "Bohemian Bistros, Παραδοσιακά Οινομαγειρεία & Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7366,
+          37.9858
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kypseli-fokionos",
+        "name": "Πεζόδρομος Φωκίωνος Νέγρη & Δημοτική Αγορά Κυψέλης",
+        "name_en": "Fokionos Negri Pedestrian Gastronomy Strip",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Καφέ & Street Food",
+        "venue_count": 49,
+        "cuisine_profile": "All-Day Cafes, Ethnic Cuisine, Burgers & Ouzeri"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7388,
+          38.0016
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kypseli-ag-georgios",
+        "name": "Πλατεία Αγίου Γεωργίου Κυψέλης",
+        "name_en": "Agios Georgios Square Dining Circle",
+        "category": "restaurant",
+        "type_label": "Μεζεδοπωλεία & Bistros",
+        "venue_count": 28,
+        "cuisine_profile": "Ιστορικά Μεζεδοπωλεία, Σύγχρονα Καφενεία & Cocktail Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7412,
+          37.9992
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-petralona-mercouri",
+        "name": "Πλατεία Μερκούρη & Τρώων (Άνω Πετράλωνα)",
+        "name_en": "Ano Petralona Troon Street Gastronomy",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Οινομαγειρεία",
+        "venue_count": 44,
+        "cuisine_profile": "Γαστροταβέρνες, Κρητικά Μεζεδοπωλεία & Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7138,
+          37.9689
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-thiseio-apostolou",
+        "name": "Πεζόδρομος Αποστόλου Παύλου & Ηρακλειδών (Θησείο)",
+        "name_en": "Thiseio Promenade Restaurants & Cafes",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια με Θέα Ακρόπολη",
+        "venue_count": 46,
+        "cuisine_profile": "Acropolis View Dining, Rooftop Gardens & Gelaterias"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7198,
+          37.9746
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kerameikos-avdi",
+        "name": "Πλατεία Αυδή & Κεραμεικός (Μυκάλης / Παραμυθίας)",
+        "name_en": "Kerameikos & Avdi Square Gastronomy Hub",
+        "category": "restaurant",
+        "type_label": "Σύγχρονα Εστιατόρια & Bars",
+        "venue_count": 52,
+        "cuisine_profile": "Michelin/Bib Gourmand Dining, Creative Greek & Courtyard Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7185,
+          37.9818
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-gazi-persefonis",
+        "name": "Πλατεία Γκαζιού & Περσεφόνης",
+        "name_en": "Gazi Nightlife & Restaurant Strip",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Nightlife",
+        "venue_count": 58,
+        "cuisine_profile": "Grill Houses, Burgers, Cocktail Clubs & Late Dining"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7124,
+          37.9778
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-ampelokipoi-mavili",
+        "name": "Πλατεία Μαβίλη & Πανόρμου (Αμπελόκηποι)",
+        "name_en": "Mavili Square & Panormou Bars & Food",
+        "category": "restaurant",
+        "type_label": "Classic Bars & Street Food",
+        "venue_count": 41,
+        "cuisine_profile": "Legendary Cocktail Bars, Street Food & Bistros"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7549,
+          37.9822
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-neos-kosmos-menaichmou",
+        "name": "Μεναίχμου & Ευρυδάμαντος (Νέος Κόσμος)",
+        "name_en": "Neos Kosmos Emerging Dining Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Σύγχρονα Καφέ",
+        "venue_count": 31,
+        "cuisine_profile": "Specialty Coffee, Burgers, Ψαροταβέρνες & Wine Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7278,
+          37.9592
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-kallimarmaro",
+        "name": "Παναθηναϊκό Στάδιο (Καλλιμάρμαρο)",
+        "name_en": "Panathenaic Stadium (Kallimarmaro)",
+        "category": "landmark",
+        "type_label": "Εμβληματικό Αξιοθέατο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7411,
+          37.9683
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-olympian-zeus",
+        "name": "Ναός του Ολυμπίου Διός & Πύλη Αδριανού",
+        "name_en": "Temple of Olympian Zeus & Hadrian's Arch",
+        "category": "landmark",
+        "type_label": "Μνημείο / Αξιοθέατο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.733,
+          37.9693
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-herodion",
+        "name": "Ωδείο Ηρώδου του Αττικού (Ηρώδειο)",
+        "name_en": "Odeon of Herodes Atticus",
+        "category": "landmark",
+        "type_label": "Αρχαίο Θέατρο / Φεστιβάλ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7245,
+          37.9708
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-filopappou",
+        "name": "Λόφος Φιλοπάππου & Πνύκα (Πανοραμική Θέα)",
+        "name_en": "Filopappou Hill & Pnyx Viewpoint",
+        "category": "landmark",
+        "type_label": "Πάρκο & Πανοραμική Θέα"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7212,
+          37.9672
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-lycabettus",
+        "name": "Λόφος Λυκαβηττού & Τελεφερίκ",
+        "name_en": "Mount Lycabettus Viewpoint",
+        "category": "landmark",
+        "type_label": "Πανοραμική Θέα Αθήνας"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7472,
+          37.9819
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-national-garden",
+        "name": "Εθνικός Κήπος & Ζάππειο Μέγαρο",
+        "name_en": "National Garden & Zappeion Hall",
+        "category": "landmark",
+        "type_label": "Μητροπολιτικό Πάρκο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7372,
+          37.9728
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-parliament",
+        "name": "Βουλή των Ελλήνων & Πλατεία Συντάγματος",
+        "name_en": "Hellenic Parliament & Syntagma Square",
+        "category": "landmark",
+        "type_label": "Εμβληματικό Σημείο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7358,
+          37.9755
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-trilogy",
+        "name": "Αθηναϊκή Τριλογία (Ακαδημία, Πανεπιστήμιο, Βιβλιοθήκη)",
+        "name_en": "Neoclassical Trilogy of Athens",
+        "category": "landmark",
+        "type_label": "Αρχιτεκτονικό Μνημείο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7336,
+          37.9806
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-monastiraki-flea",
+        "name": "Πλατεία Μοναστηρακίου & Αγορά Αντικών Αβυσσηνίας",
+        "name_en": "Monastiraki Square & Flea Market",
+        "category": "landmark",
+        "type_label": "Τουριστικό Σημείο Ενδιαφέροντος"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7248,
+          37.9762
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-varvakios",
+        "name": "Κεντρική Δημοτική Αγορά Αθηνών (Βαρβάκειος)",
+        "name_en": "Varvakios Central Food Market",
+        "category": "landmark",
+        "type_label": "Γαστρονομικό Αξιοθέατο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7278,
+          37.9802
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-strefi",
+        "name": "Λόφος Στρέφη (Εξάρχεια)",
+        "name_en": "Strefi Hill Park & Viewpoint",
+        "category": "landmark",
+        "type_label": "Πάρκο & Θέα"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7376,
+          37.9882
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-pedion-areos",
+        "name": "Πεδίον του Άρεως (Μητροπολιτικό Πάρκο)",
+        "name_en": "Pedion tou Areos Park",
+        "category": "landmark",
+        "type_label": "Μητροπολιτικό Πάρκο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7358,
+          37.9928
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-observatory",
+        "name": "Εθνικό Αστεροσκοπείο Αθηνών (Λόφος Νυμφών - Θησείο)",
+        "name_en": "National Observatory of Athens",
+        "category": "landmark",
+        "type_label": "Ιστορικό Αξιοθέατο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7182,
+          37.9734
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-megaro-hall",
+        "name": "Μέγαρο Μουσικής Αθηνών",
+        "name_en": "Athens Concert Hall (Megaron)",
+        "category": "landmark",
+        "type_label": "Πολιτιστικό Κέντρο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7541,
+          37.9791
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-kypseli-agora",
+        "name": "Δημοτική Αγορά Κυψέλης (Πολυχώρος Πολιτισμού)",
+        "name_en": "Kypseli Municipal Market Cultural Hub",
+        "category": "landmark",
+        "type_label": "Πολιτιστικό Σημείο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7393,
+          38.0024
+        ]
+      }
+    }
+  ]
+}

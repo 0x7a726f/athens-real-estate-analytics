@@ -1,0 +1,39 @@
+@startuml
+title UML Activity Diagram - MVC Request Routing & View Dispatching (softeng26-XX)
+
+|Χρήστης (Desktop ή Smartphone)|
+start
+:Αίτημα HTTP στον MVC Server (:8001);
+
+|UrbanAnalyticsController (mvc/backend/controllers.py)|
+if (Τύπος Αιτήματος;) then (Αίτημα View HTML: `/`, `/desktop`, `/mobile`)
+  if (Έλεγχος Διαδρομής ή User-Agent;) then (`/mobile` ή Mobile User-Agent)
+    :Επιλογή **View 2: Smartphone View**\n(`mvc/frontend/mobile_view.html`);
+  else (`/desktop` ή Desktop Browser)
+    :Επιλογή **View 1: Desktop Browser View**\n(`mvc/frontend/desktop_view.html`);
+  endif
+  :Αποστολή HTML View στον Client;
+  |MVC View (desktop_view.html ή mobile_view.html)|
+  :Αρχικοποίηση Χάρτη Leaflet & Γραφημάτων Chart.js;
+  :Αποστολή ασύγχρονου αιτήματος `GET /api/v1/properties/evaluate`;
+else (Αίτημα REST API: `/api/v1/*`)
+endif
+
+|UrbanAnalyticsController (mvc/backend/controllers.py)|
+:Ανάγνωση Παραμέτρων (lat, lon, radius, rooms);
+:Κλήση `PropertyEvaluationModel.evaluate()`;
+
+|MVC Domain Models (mvc/backend/models.py)|
+:Εκτέλεση `find_neighborhood()` (Ray-Casting σε 44 Γειτονιές);
+:Υπολογισμός Αποστάσεων Haversine από 28 POIs (Μετρό, ΑΕΙ);
+:Έλεγχος Πολυγώνων Φυσικών Κινδύνων (Πλημμύρα, Θερμική Νησίδα);
+:Υπολογισμός ADR, Πληρότητας, Ετήσιου Εσόδου, ROI & Investment Score;
+:Επιστροφή Δομημένου Model State στον Controller;
+
+|UrbanAnalyticsController (mvc/backend/controllers.py)|
+:Επιστροφή JSON Response (HTTP 200);
+
+|MVC View (desktop_view.html ή mobile_view.html)|
+:Ενημέρωση DOM Elements του ενεργού View\n(Desktop Workstation Panels ή Smartphone Tabs);
+stop
+@enduml

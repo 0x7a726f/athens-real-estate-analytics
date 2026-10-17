@@ -1,0 +1,54 @@
+@startuml
+title UML Deployment Diagram - Αρχιτεκτονική Πολλαπλών Επιπέδων (Layered - softeng26-XX)
+
+node "Υπολογιστής / Κινητή Συσκευή Αναλυτή (Client Tier)" {
+  node "Desktop / Smartphone Web Browser" {
+    artifact "index.html & app.js\n(Leaflet.js + Chart.js + Tailwind)" as BrowserBundle
+  }
+  node "Terminal Shell (PowerShell / Bash)" {
+    artifact "urban_cli.py\n(Python CLI Client)" as CLIBundle
+  }
+}
+
+node "Application Server Host (Python 3.13 / Uvicorn :8000)" {
+  component "ASGI Server (Uvicorn + Starlette)\nlayered/backend/app.py" as ASGI
+  component "Business Logic Engine\nspatial_service.py & eurostat_connector.py" as Engine
+  component "Data Access Layer\ndata_access.py" as DAL
+
+  folder "layered/data/ (Geospatial Data Store)" {
+    artifact "neighborhoods.geojson (44 Polygons)" as F1
+    artifact "airbnb_listings.geojson (345 Real Pins)" as F2
+    artifact "athens_gis_pois.geojson (28 POIs)" as F3
+    artifact "athens_gis_hazards.geojson (3 Zones)" as F4
+    artifact "eurostat_urban_audit_cache.json" as F5
+    artifact "scenarios.json" as F6
+  }
+
+  ASGI --> Engine
+  Engine --> DAL
+  DAL --> F1
+  DAL --> F2
+  DAL --> F3
+  DAL --> F4
+  DAL --> F5
+  DAL --> F6
+}
+
+cloud "Εξωτερικές Δημόσιες Υποδομές Διαδικτύου" {
+  node "ec.europa.eu/eurostat" {
+    artifact "SDMX 3.0 / JSON-stat 2.0 API\n(urb_cpop1, urb_ctour, urb_clivcon)" as EuroNode
+  }
+  node "data.insideairbnb.com" {
+    artifact "Athens Inside Airbnb\nGeoJSON & CSV Datasets" as AirbnbNode
+  }
+  node "geocoding-api.open-meteo.com" {
+    artifact "GeoNames Geocoding API" as GeoNode
+  }
+}
+
+BrowserBundle --> ASGI : HTTP/REST JSON (:8000)
+CLIBundle --> ASGI : HTTP/REST JSON (:8000)
+Engine --> EuroNode : HTTPS GET (Port 443)
+Engine --> GeoNode : HTTPS GET (Port 443)
+F1 <.. AirbnbNode : ETL Pipeline
+@enduml

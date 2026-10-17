@@ -1,0 +1,34 @@
+@startuml
+title UML API & View Routing Sequence Diagram - MVC Architecture (softeng26-XX)
+autonumber
+
+actor "Χρήστης Desktop" as DesktopUser
+actor "Χρήστης Smartphone" as MobileUser
+participant "UrbanAnalyticsController\n(mvc/backend/controllers.py)" as Controller
+participant "PropertyEvaluationModel\n(mvc/backend/models.py)" as PropModel
+participant "NeighborhoodAnalyticsModel\n(mvc/backend/models.py)" as NbModel
+participant "EurostatMacroModel\n(mvc/backend/models.py)" as EuroModel
+
+== 1. Απόδοση Ξεχωριστών Views (Desktop vs Smartphone) ==
+DesktopUser -> Controller : GET /desktop
+Controller --> DesktopUser : HTML View 1 (`desktop_view.html`)
+
+MobileUser -> Controller : GET /mobile
+Controller --> MobileUser : HTML View 2 (`mobile_view.html`)
+
+== 2. Κλήσεις REST API προς τους MVC Controllers ==
+DesktopUser -> Controller : GET /api/v1/properties/evaluate?lat=37.9648&lon=23.7265&radius=600&rooms=2
+Controller -> PropModel : evaluate(37.9648, 23.7265, 600, 2)
+PropModel --> Controller : Evaluation Model Dict
+Controller --> DesktopUser : HTTP 200 JSON
+
+MobileUser -> Controller : GET /api/v1/neighborhoods/analytics
+Controller -> NbModel : compute_all()
+NbModel --> Controller : 44 Neighborhood Models
+Controller --> MobileUser : HTTP 200 JSON
+
+DesktopUser -> Controller : GET /api/v1/macro/urban-audit?city=EL300
+Controller -> EuroModel : get_urban_audit("EL300")
+EuroModel --> Controller : Eurostat SDMX Model Dict
+Controller --> DesktopUser : HTTP 200 JSON
+@enduml

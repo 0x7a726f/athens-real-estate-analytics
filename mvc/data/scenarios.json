@@ -1,0 +1,30 @@
+[
+  {
+    "scenario_id": "scen-001",
+    "title": "Αγορά & Ανακαίνιση 2ΥΔ στο Κουκάκι (Πλησίον Μετρό Φιξ)",
+    "created_at": "2026-10-16T14:20:00Z",
+    "lat": 37.9648,
+    "lon": 23.7265,
+    "radius": 500,
+    "rooms": 2,
+    "acquisition_cost_eur": 245000,
+    "investment_score": 88.5,
+    "estimated_annual_revenue_eur": 34120,
+    "estimated_gross_roi_pct": 13.93,
+    "neighbourhood": "Κουκάκι"
+  },
+  {
+    "scenario_id": "scen-002",
+    "title": "Επενδυτικό Studio στα Εξάρχεια (Νέα Γραμμή Μετρό 4)",
+    "created_at": "2026-10-16T18:05:00Z",
+    "lat": 37.9862,
+    "lon": 23.7368,
+    "radius": 500,
+    "rooms": 1,
+    "acquisition_cost_eur": 138000,
+    "investment_score": 81.2,
+    "estimated_annual_revenue_eur": 20980,
+    "estimated_gross_roi_pct": 15.20,
+    "neighbourhood": "Εξάρχεια"
+  }
+]

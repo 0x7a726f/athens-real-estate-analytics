@@ -1,0 +1,42 @@
+@startuml
+title UML Component Diagram - Αρχιτεκτονική Πολλαπλών Επιπέδων (Layered - softeng26-XX)
+skinparam componentStyle uml2
+
+package "Επίπεδο Παρουσίασης (Presentation Tier)" {
+  [Responsive Web Application\n(Desktop & Smartphone Browser)\nLeaflet.js + Chart.js] as WebApp
+  [Command Line Interface (CLI)\nlayered/cli/urban_cli.py] as CLIApp
+}
+
+package "Επίπεδο Διεπαφής Υπηρεσιών (REST API Tier)" {
+  interface "RESTful API v1\n(HTTP/JSON)" as IRestAPI
+  [Starlette / Uvicorn API Gateway\nlayered/backend/app.py] as APIServer
+  IRestAPI - [APIServer]
+}
+
+package "Επίπεδο Επιχειρησιακής Λογικής (Business Logic Tier)" {
+  [SpatialAnalyticsService\n(Haversine, Point-in-Polygon,\nInvestment Score, Airbnb ROI)] as SpatialComp
+  [EurostatConnector\n(SDMX / JSON-stat 2.0 Client)] as EurostatComp
+}
+
+package "Επίπεδο Δεδομένων (Data Access & Persistence Tier)" {
+  [DataRepository\nlayered/backend/data_access.py] as DALComp
+  database "Local GeoJSON & JSON Store\n(44 Neighborhoods, 14,171 Listings,\n28 GIS POIs, 3 Hazard Zones)" as GeoStore
+}
+
+cloud "Εξωτερικές Πηγές Δεδομένων (Χωρίς API Key)" {
+  [Eurostat Dissemination API\n(urb_cpop1, urb_ctour, urb_clivcon)] as ExtEurostat
+  [Open-Meteo Geocoding API] as ExtGeocode
+  [Inside Airbnb & Athens GIS\nPublic Data Repositories] as ExtOpenData
+}
+
+WebApp ..> IRestAPI : HTTPS / JSON
+CLIApp ..> IRestAPI : HTTP / JSON
+APIServer --> SpatialComp
+APIServer --> EurostatComp
+SpatialComp --> DALComp
+EurostatComp --> DALComp
+DALComp --> GeoStore
+EurostatComp ..> ExtEurostat : JSON-stat 2.0
+SpatialComp ..> ExtGeocode : REST JSON
+GeoStore <.. ExtOpenData : ETL Sync (fetch_real_datasets.py)
+@enduml

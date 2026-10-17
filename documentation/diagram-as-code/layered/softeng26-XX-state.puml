@@ -1,0 +1,40 @@
+@startuml
+title UML State Diagram - Κύκλος Ζωής Αξιολόγησης Ακινήτου & Επενδυτικού Σεναρίου (softeng26-XX)
+
+[*] --> SystemInitialized : Εκκίνηση Server & Φόρτωση GeoJSON / Eurostat Cache
+
+state SystemInitialized {
+  [*] --> IdleMapExploration
+  IdleMapExploration : Ο χάρτης Αθήνας προβάλλει τα 4 επίπεδα:\n1. Heatmap Κορεσμού Γειτονιών\n2. Καταλύματα Inside Airbnb\n3. Σταθμούς Μετρό & ΑΕΙ (Athens GIS)\n4. Ζώνες Φυσικών Κινδύνων
+
+  IdleMapExploration --> CoordinatesSelected : Κλικ στον Χάρτη ή Επιλογή Preset\n(lat, lon, radius, rooms)
+  CoordinatesSelected --> SpatialEvaluationRunning : GET /api/v1/properties/evaluate
+
+  state SpatialEvaluationRunning {
+    [*] --> GeospatialMatching
+    GeospatialMatching : Point-in-Polygon (Γειτονιά & Ζώνες Κινδύνου)\nHaversine (Μετρό, ΑΕΙ, Airbnb)
+    GeospatialMatching --> FinancialModeling : Ευρέθηκαν ανταγωνιστικά καταλύματα
+    FinancialModeling : Υπολογισμός ADR, Πληρότητας, Ετήσιου Εσόδου,\nGross/Net ROI & Investment Score (0-100)
+  }
+
+  SpatialEvaluationRunning --> SafeHighYieldOpportunity : Score >= 75 & Εκτός Ζώνης Κινδύνου
+  SpatialEvaluationRunning --> HazardWarningState : Εντός Ζώνης Πλημμύρας / Θερμικής Νησίδας
+  SpatialEvaluationRunning --> ModerateOrSaturatedState : Score < 75 & Εκτός Ζώνης Κινδύνου
+
+  SafeHighYieldOpportunity --> ScenarioPersisted : POST /api/v1/scenarios\n(Αποθήκευση στο Χαρτοφυλάκιο)
+  HazardWarningState --> ScenarioPersisted : POST /api/v1/scenarios\n(Αποθήκευση με Σημείωση Κινδύνου)
+  ModerateOrSaturatedState --> ScenarioPersisted : POST /api/v1/scenarios
+
+  ScenarioPersisted --> IdleMapExploration : Νέα Αναζήτηση Σημείου
+  SafeHighYieldOpportunity --> CoordinatesSelected : Αλλαγή Ακτίνας / Δωματίων
+  HazardWarningState --> CoordinatesSelected : Μετακίνηση Pin στον Χάρτη
+}
+
+SystemInitialized --> DataSynchronizing : POST /api/v1/admin/sync
+state DataSynchronizing {
+  [*] --> FetchingEurostatSDMX : Κλήση Eurostat JSON-stat API (EL001C)
+  FetchingEurostatSDMX --> ReloadingGeoJSONLayers : Ενημέρωση τοπικής Cache
+  ReloadingGeoJSONLayers --> [*] : Επιτυχής Συγχρονισμός
+}
+DataSynchronizing --> SystemInitialized : HTTP 200 Synchronized
+@enduml
