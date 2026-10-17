@@ -1,5 +1,19 @@
 [
   {
+    "scenario_id": "scen-f83fd4",
+    "title": "Automated Functional Test Scenario",
+    "created_at": "2026-10-17T17:03:39Z",
+    "lat": 37.9722,
+    "lon": 23.7305,
+    "radius": 500,
+    "rooms": 2,
+    "acquisition_cost_eur": 310000.0,
+    "investment_score": 89.2,
+    "estimated_annual_revenue_eur": 39500.0,
+    "estimated_gross_roi_pct": 12.74,
+    "neighbourhood": "Εμπορικό Τρίγωνο - Πλάκα"
+  },
+  {
     "scenario_id": "scen-002136",
     "title": "Automated Functional Test Scenario",
     "created_at": "2026-10-17T16:54:58Z",

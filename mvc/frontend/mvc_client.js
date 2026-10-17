@@ -602,7 +602,7 @@ function renderEvaluationView(data) {
 
   const tbody = document.getElementById("competitorsTableBody");
   tbody.innerHTML = "";
-  (roi.nearby_competitors || []).slice(0, 8).forEach((c) => {
+  (roi.nearby_competitors || []).slice(0, 7).forEach((c) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="py-1.5 pr-2 font-medium text-white">${c.name.slice(0, 32)}</td>
