@@ -544,6 +544,41 @@ function renderEvaluationView(data) {
       .join("");
   }
 
+  const qol = data.quality_of_life_metrics || loc.quality_of_life;
+  if (qol) {
+    const qolBadge = document.getElementById("qolCompositeBadge");
+    if (qolBadge) qolBadge.textContent = `${qol.composite_qol_score}%`;
+    const qolDiff = document.getElementById("qolDiffBadge");
+    if (qolDiff) {
+      const d = Number(qol.vs_athens_average_diff || 0);
+      const sign = d >= 0 ? "+" : "";
+      qolDiff.textContent = `${sign}${d.toFixed(1)}% vs Αθήνα (${qol.athens_eurostat_baseline_pct}%)`;
+    }
+    const qolGrade = document.getElementById("qolGradeLabel");
+    if (qolGrade) qolGrade.textContent = qol.qol_grade;
+    const qolList = document.getElementById("qolDimensionsList");
+    if (qolList && Array.isArray(qol.dimensions)) {
+      qolList.innerHTML = qol.dimensions
+        .map((dim) => {
+          const val = Number(dim.neighborhood_score_pct || 0);
+          const base = Number(dim.eurostat_athens_pct || 50);
+          const barColor = val >= 70 ? "bg-emerald-400" : val >= 50 ? "bg-cyan-400" : "bg-amber-400";
+          return `
+            <div class="space-y-0.5">
+              <div class="flex justify-between">
+                <span class="text-slate-200">${dim.label}</span>
+                <span class="font-bold text-white">${val.toFixed(1)}% <span class="text-[9px] text-slate-400 font-normal">(Αθήνα: ${base}%)</span></span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="${barColor} h-full rounded-full" style="width:${Math.min(100, Math.max(10, val))}%"></div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+  }
+
   const alertBox = document.getElementById("hazardAlertBox");
   const alertIcon = document.getElementById("hazardAlertIcon");
   const alertTitle = document.getElementById("hazardAlertTitle");

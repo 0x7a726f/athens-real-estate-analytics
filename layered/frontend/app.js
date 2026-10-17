@@ -812,6 +812,64 @@ function renderEvaluationSidePanel(data) {
       .join("");
   }
 
+  // 4. Eurostat Quality of Life (urb_percep EL001C) Neighborhood Assessment
+  const qol = data.quality_of_life_metrics || loc.quality_of_life;
+  if (qol) {
+    const qolBadge = document.getElementById("qolCompositeBadge");
+    if (qolBadge) qolBadge.textContent = `${qol.composite_qol_score}%`;
+
+    const qolDiff = document.getElementById("qolDiffBadge");
+    if (qolDiff) {
+      const d = Number(qol.vs_athens_average_diff || 0);
+      const sign = d >= 0 ? "+" : "";
+      qolDiff.textContent = `${sign}${d.toFixed(1)}% vs Αθήνα (${qol.athens_eurostat_baseline_pct}%)`;
+      qolDiff.className = `text-[10px] font-bold ${
+        d >= 0 ? "text-emerald-300" : "text-amber-300"
+      }`;
+    }
+
+    const qolGrade = document.getElementById("qolGradeLabel");
+    if (qolGrade) {
+      qolGrade.textContent = `${qol.qol_grade} • Πηγή: ${qol.source_dataset}`;
+    }
+
+    const qolList = document.getElementById("qolDimensionsList");
+    if (qolList && Array.isArray(qol.dimensions)) {
+      qolList.innerHTML = qol.dimensions
+        .map((dim) => {
+          const val = Number(dim.neighborhood_score_pct || 0);
+          const base = Number(dim.eurostat_athens_pct || 50);
+          const diff = val - base;
+          const barColor =
+            val >= 70
+              ? "bg-emerald-400"
+              : val >= 50
+              ? "bg-cyan-400"
+              : "bg-amber-400";
+          return `
+            <div class="space-y-0.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-200 font-medium">${dim.label} <span class="text-[9px] text-slate-500 font-mono">(${dim.code})</span></span>
+                <span class="font-bold text-white">
+                  ${val.toFixed(1)}%
+                  <span class="text-[10px] font-normal ${
+                    diff >= 0 ? "text-emerald-400" : "text-amber-400"
+                  }">(Αθήνα EL001C: ${base}%)</span>
+                </span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden relative">
+                <div class="${barColor} h-full rounded-full transition-all duration-300" style="width:${Math.min(
+            100,
+            Math.max(10, val)
+          )}%"></div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+  }
+
   const alertBox = document.getElementById("hazardAlertBox");
   const alertIcon = document.getElementById("hazardAlertIcon");
   const alertTitle = document.getElementById("hazardAlertTitle");

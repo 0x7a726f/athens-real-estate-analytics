@@ -290,7 +290,115 @@ class SpatialAnalyticsService:
             / max(1.0, float(neighborhood.get("population", 10000)))
             * 1000.0
         )
-        macro_score = 15.0 if saturation_ratio < 80 else (11.5 if saturation_ratio < 130 else 8.5)
+
+        # 4b. Eurostat Quality of Life (urb_percep EL001C 2023 Baseline + Micro-Location Spatial Modifiers)
+        price_ratio = price_per_sqm / 3250.0  # Neighborhood €/m² vs Athens average
+        landmark_dist = nearest_landmark["distance_m"] if nearest_landmark else 900.0
+
+        qol_transit_local = round(
+            min(96.0, max(42.0, 69.2 + (500.0 - metro_dist) * 0.032 + len(metros_in_catchment) * 3.5)),
+            1,
+        )
+        qol_culture_local = round(
+            min(96.0, max(40.0, 55.0 + len(museums_in_catchment) * 5.2 + len(rest_hubs_in_catchment) * 3.8)),
+            1,
+        )
+        qol_safety_local = round(
+            min(92.0, max(36.0, 54.2 + (price_ratio - 1.0) * 30.0 + min(8.0, len(rest_hubs_in_catchment) * 1.4))),
+            1,
+        )
+        qol_green_local = round(
+            min(
+                89.0,
+                max(
+                    22.0,
+                    37.2
+                    + len(landmarks_in_catchment) * 7.5
+                    + max(0.0, (650.0 - landmark_dist) * 0.024)
+                    - (10.0 if total_hazard_penalty > 0 else 0.0),
+                ),
+            ),
+            1,
+        )
+        qol_env_quiet_local = round(
+            min(
+                84.0,
+                max(
+                    20.0,
+                    52.0
+                    - saturation_ratio * 0.20
+                    + len(landmarks_in_catchment) * 3.0
+                    - total_hazard_penalty * 0.5,
+                ),
+            ),
+            1,
+        )
+        qol_composite_score = round(
+            0.24 * qol_transit_local
+            + 0.20 * qol_culture_local
+            + 0.22 * qol_safety_local
+            + 0.18 * qol_green_local
+            + 0.16 * qol_env_quiet_local,
+            1,
+        )
+        athens_qol_baseline = 68.2  # Official Eurostat PS3524V + PS3525V (Neighborhood satisfaction in EL001C)
+
+        quality_of_life_metrics = {
+            "source_dataset": "Eurostat Perception Survey on Quality of Life in European Cities (urb_percep, EL001C, 2023)",
+            "composite_qol_score": qol_composite_score,
+            "athens_eurostat_baseline_pct": athens_qol_baseline,
+            "vs_athens_average_diff": round(qol_composite_score - athens_qol_baseline, 1),
+            "qol_grade": (
+                "Εξαιρετική Ποιότητα Ζωής (Top Tier)"
+                if qol_composite_score >= 72
+                else (
+                    "Υψηλή Ποιότητα Ζωής (Άνω του Μ.Ο. Αθήνας)"
+                    if qol_composite_score >= 62
+                    else "Μέτρια Αστική Ποιότητα Ζωής (Πυκσός Ιστός)"
+                )
+            ),
+            "dimensions": [
+                {
+                    "id": "public_transport",
+                    "code": "PS1012V+PS1013V",
+                    "label": "🚇 Δημόσιες Συγκοινωνίες & Προσβασιμότητα",
+                    "neighborhood_score_pct": qol_transit_local,
+                    "eurostat_athens_pct": 69.2,
+                },
+                {
+                    "id": "cultural_facilities",
+                    "code": "PS1082V+PS1083V",
+                    "label": "🏛️ Πολιτισμός, Μουσεία & Αναψυχή",
+                    "neighborhood_score_pct": qol_culture_local,
+                    "eurostat_athens_pct": 60.9,
+                },
+                {
+                    "id": "safety_and_trust",
+                    "code": "PS3519V+PS3520V",
+                    "label": "🛡️ Ασφάλεια Γειτονιάς τη Νύχτα & Συνοχή",
+                    "neighborhood_score_pct": qol_safety_local,
+                    "eurostat_athens_pct": 54.2,
+                },
+                {
+                    "id": "green_and_public_spaces",
+                    "code": "PS1052V+PS1053V",
+                    "label": "🌿 Χώροι Πρασίνου, Πάρκα & Πεζόδρομοι",
+                    "neighborhood_score_pct": qol_green_local,
+                    "eurostat_athens_pct": 37.2,
+                },
+                {
+                    "id": "quietness_and_air",
+                    "code": "PS3270V+PS3260V",
+                    "label": "🔇 Ησυχία, Καθαριότητα & Ποιότητα Αέρα",
+                    "neighborhood_score_pct": qol_env_quiet_local,
+                    "eurostat_athens_pct": 35.5,
+                },
+            ],
+        }
+
+        base_macro = 15.0 if saturation_ratio < 80 else (11.5 if saturation_ratio < 130 else 8.5)
+        qol_bonus = max(-1.5, min(2.0, (qol_composite_score - 62.0) * 0.12))
+        macro_score = round(min(15.0, max(6.0, base_macro + qol_bonus)), 1)
 
         raw_score = transit_score + yield_score + amenity_score + macro_score - total_hazard_penalty
         investment_score = round(max(10.0, min(99.0, raw_score)), 1)
@@ -309,7 +417,6 @@ class SpatialAnalyticsService:
         # 5. Compute Dynamic Per-Neighborhood Price & Tourism Index Series (2019-2025) from Dataset Metrics
         years = [2019, 2020, 2021, 2022, 2023, 2024, 2025]
         athens_base_idx = [116.4, 121.0, 130.2, 145.8, 164.5, 179.2, 191.8]
-        price_ratio = price_per_sqm / 3250.0  # Neighborhood €/m² vs Athens average
         growth_accel = min(1.28, max(0.84, 0.86 + (price_ratio - 0.85) * 0.35 + (saturation_ratio / 350.0)))
         nb_price_index_series = [
             round(base_val * (0.88 + 0.12 * price_ratio) * (1.0 + (growth_accel - 1.0) * (i / 6.0)), 1)
@@ -355,17 +462,20 @@ class SpatialAnalyticsService:
                 "avg_purchase_price_sqm": price_per_sqm,
                 "saturation_per_1000_residents": round(saturation_ratio, 1),
                 "neighborhood_index_series": neighborhood_index_series,
+                "quality_of_life": quality_of_life_metrics,
             },
+            "quality_of_life_metrics": quality_of_life_metrics,
             "investment_rating": {
                 "score": investment_score,
                 "grade": rating_label,
-                "formula": "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Αγορά/Κορεσμός(0-15) - Ποινή Κινδύνων(0 έως -25)",
+                "formula": "Score = Μετρό(0-30) + Απόδοση ROI(0-35) + POIs/Εστίαση/Μουσεία(0-20) + Eurostat QoL/Αγορά(0-15) - Ποινή Κινδύνων(0 έως -25)",
                 "breakdown": {
                     "transit_accessibility_score": round(transit_score, 1),
                     "airbnb_yield_score": round(yield_score, 1),
                     "urban_amenities_score": round(amenity_score, 1),
                     "macro_resilience_score": round(macro_score, 1),
                     "neighborhood_macro_score": round(macro_score, 1),
+                    "quality_of_life_index": qol_composite_score,
                     "natural_hazard_penalty": -total_hazard_penalty,
                 },
             },

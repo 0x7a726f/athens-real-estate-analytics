@@ -24,6 +24,10 @@ class EurostatConnector:
             "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/urb_ctour"
             "?format=JSON&lang=EN&cities=EL001C&indic_ur=CR2001V"
         ),
+        "urb_percep": (
+            "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/urb_percep"
+            "?format=JSON&lang=EN&cities=EL001C&indic_ur=PS3524V&indic_ur=PS3525V"
+        ),
     }
 
     def __init__(self, repo: DataRepository) -> None:
@@ -55,12 +59,18 @@ class EurostatConnector:
 
         city_data = dict(cities.get(normalized_code, cities.get("EL300", {})))
         live_extract = cache_payload.get("live_eurostat_sdmx_extract", {})
+        qol_percep = live_extract.get("urb_percep_quality_of_life_2023", {})
 
         live_status: Dict[str, Any] = {
             "mode": "CACHED_SDMX_SNAPSHOT",
             "live_api_attempted": attempt_live,
             "official_eurostat_city_code": "EL001C (Athina - Greater City)",
-            "eurostat_datasets": ["urb_cpop1 (DE1001V)", "urb_ctour (CR2001V)", "urb_clivcon (SA1001V)"],
+            "eurostat_datasets": [
+                "urb_cpop1 (DE1001V)",
+                "urb_ctour (CR2001V)",
+                "urb_clivcon (SA1001V)",
+                "urb_percep (Quality of Life Survey: PS1012V, PS3524V, PS3519V, PS1052V, PS1082V, PS3270V)",
+            ],
             "requires_api_key": False,
             "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
@@ -85,6 +95,7 @@ class EurostatConnector:
             "connection": live_status,
             "requested_city": normalized_code,
             "city_analytics": city_data,
+            "quality_of_life_urb_percep": qol_percep,
             "live_eurostat_sdmx_extract": live_extract,
             "comparison_cities": [cities[k] for k in cities if k != normalized_code],
             "eu_mediterranean_benchmark": cache_payload.get("eu_Mediterranean_benchmark", []),

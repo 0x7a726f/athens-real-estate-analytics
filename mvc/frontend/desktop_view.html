@@ -393,6 +393,21 @@
             <div id="nearbyPoisList" class="pt-1.5 border-t border-slate-800 flex flex-wrap gap-1.5"></div>
           </div>
 
+          <!-- Eurostat Quality of Life (urb_percep EL001C) Neighborhood Assessment -->
+          <div class="p-3 rounded-xl bg-gradient-to-br from-emerald-950/35 via-slate-900/95 to-indigo-950/35 border border-emerald-500/35 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <div class="text-xs font-extrabold text-emerald-300">🌿 Ποιότητα Ζωής Περιοχής (Eurostat <code>urb_percep</code>)</div>
+                <div id="qolGradeLabel" class="text-[10px] text-slate-300">Σύγκριση με Μ.Ο. Αθήνας EL001C (68.2%)</div>
+              </div>
+              <div class="text-right bg-slate-950/80 border border-emerald-500/40 rounded-lg px-2.5 py-1">
+                <span id="qolCompositeBadge" class="text-base font-black text-emerald-400">76.4%</span>
+                <span id="qolDiffBadge" class="block text-[9px] font-bold text-cyan-300">+8.2% vs Αθήνα</span>
+              </div>
+            </div>
+            <div id="qolDimensionsList" class="space-y-1.5 text-[11px]"></div>
+          </div>
+
           <div id="hazardAlertBox" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs flex items-start gap-3">
             <span id="hazardAlertIcon" class="text-lg">✅</span>
             <div>

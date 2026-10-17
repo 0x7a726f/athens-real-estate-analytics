@@ -586,6 +586,35 @@
             </div>
           </div>
 
+          <!-- Eurostat Quality of Life (urb_percep EL001C) Neighborhood Assessment -->
+          <div class="p-3.5 rounded-xl bg-gradient-to-br from-emerald-950/35 via-slate-900/95 to-indigo-950/35 border border-emerald-500/35 space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs font-extrabold text-emerald-300">
+                    🌿 Δείκτης Ποιότητας Ζωής Περιοχής (Eurostat Quality of Life)
+                  </span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 font-mono">
+                    urb_percep • EL001C
+                  </span>
+                </div>
+                <p id="qolGradeLabel" class="text-[11px] text-slate-300 mt-0.5">
+                  Σύγκριση επιλεγμένης γειτονιάς με τον επίσημο μέσο όρο Αθήνας (68.2%)
+                </p>
+              </div>
+              <div class="text-right bg-slate-950/80 border border-emerald-500/40 rounded-xl px-2.5 py-1">
+                <div class="text-[9px] uppercase tracking-wider text-slate-400">QoL Index</div>
+                <div class="flex items-baseline gap-1.5 justify-end">
+                  <span id="qolCompositeBadge" class="text-lg font-black text-emerald-400">76.4%</span>
+                  <span id="qolDiffBadge" class="text-[10px] font-bold text-cyan-300">+8.2% vs Αθήνα</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="qolDimensionsList" class="space-y-1.5 text-[11px]">
+            </div>
+          </div>
+
           <!-- Dynamic Natural Hazard Alert Box -->
           <div id="hazardAlertBox" class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-xs flex items-start gap-3">
             <span id="hazardAlertIcon" class="text-lg">✅</span>
