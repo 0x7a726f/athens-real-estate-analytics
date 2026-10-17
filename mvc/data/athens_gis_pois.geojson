@@ -1,29 +1,752 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "source": "Athens GIS Repository (athensgis.gr - Category 7 GIS: Metro, Museums, Restaurants, Landmarks)",
+    "source": "Athens GIS Repository & OASA/STASY Network (Metro Lines 1/2/3, Tram T6/T7, Museums, Restaurants, Landmarks)",
     "license": "CC BY 4.0",
-    "total_features": 66,
+    "total_features": 143,
     "categories": {
-      "metro": 16,
-      "museum": 15,
-      "restaurant": 20,
-      "landmark": 15
+      "metro": 77,
+      "museum": 18,
+      "restaurant": 28,
+      "landmark": 20
     }
   },
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-syntagma",
-        "name": "Σταθμός Μετρό Σύνταγμα",
-        "name_en": "Syntagma Metro Station",
+        "id": "gis-isap-peiraias",
+        "name": "Σταθμός ΗΣΑΠ / Μετρό Πειραιάς",
+        "name_en": "Piraeus Metro & ISAP Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός ΗΣΑΠ & Μετρό",
+        "transit_mode": "interchange",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Γραμμή 3 (Μπλε)",
+          "Προαστιακός"
+        ],
+        "daily_passengers": 95000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6432,
+          37.9482
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-faliro",
+        "name": "Σταθμός ΗΣΑΠ Φάληρο",
+        "name_en": "Faliro ISAP & Tram Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ & Τραμ",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Τραμ Τ7"
+        ],
+        "daily_passengers": 32000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6652,
+          37.945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-moschato",
+        "name": "Σταθμός ΗΣΑΠ Μοσχάτο",
+        "name_en": "Moschato ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 24000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6797,
+          37.9551
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-kallithea",
+        "name": "Σταθμός ΗΣΑΠ Καλλιθέα",
+        "name_en": "Kallithea ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 38000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.697,
+          37.9603
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-tavros",
+        "name": "Σταθμός ΗΣΑΠ Ταύρος (Ελ. Βενιζέλος)",
+        "name_en": "Tavros ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 22000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7033,
+          37.9625
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-petralona",
+        "name": "Σταθμός ΗΣΑΠ Πετράλωνα",
+        "name_en": "Petralona ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 29000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7091,
+          37.9685
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-thiseio",
+        "name": "Σταθμός ΗΣΑΠ Θησείο",
+        "name_en": "Thiseio ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 34000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7208,
+          37.9767
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-monastiraki",
+        "name": "Σταθμός Μετρό / ΗΣΑΠ Μοναστηράκι",
+        "name_en": "Monastiraki Metro & ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό & ΗΣΑΠ",
+        "transit_mode": "interchange",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 96000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7256,
+          37.9761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-omonia",
+        "name": "Σταθμός Μετρό / ΗΣΑΠ Ομόνοια",
+        "name_en": "Omonia Metro & ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό & ΗΣΑΠ",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 88000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7282,
+          37.9841
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-victoria",
+        "name": "Σταθμός ΗΣΑΠ Βικτώρια",
+        "name_en": "Victoria ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 43000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7302,
+          37.9931
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-attiki",
+        "name": "Σταθμός Μετρό / ΗΣΑΠ Αττική",
+        "name_en": "Attiki Metro & ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό & ΗΣΑΠ",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 67000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7229,
+          37.9994
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-agios-nikolaos",
+        "name": "Σταθμός ΗΣΑΠ Άγιος Νικόλαος",
+        "name_en": "Agios Nikolaos ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 24000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7277,
+          38.0069
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-kato-patisia",
+        "name": "Σταθμός ΗΣΑΠ Κάτω Πατήσια",
+        "name_en": "Kato Patisia ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 31000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7286,
+          38.0117
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-agios-eleftherios",
+        "name": "Σταθμός ΗΣΑΠ Άγιος Ελευθέριος",
+        "name_en": "Agios Eleftherios ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 23000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7317,
+          38.0202
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-ano-patisia",
+        "name": "Σταθμός ΗΣΑΠ Άνω Πατήσια",
+        "name_en": "Ano Patisia ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 33000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.736,
+          38.0238
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-perissos",
+        "name": "Σταθμός ΗΣΑΠ Περισσός",
+        "name_en": "Perissos ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 21000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7447,
+          38.0328
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-pefkakia",
+        "name": "Σταθμός ΗΣΑΠ Πευκάκια",
+        "name_en": "Pefkakia ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 16000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7501,
+          38.0372
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-nea-ionia",
+        "name": "Σταθμός ΗΣΑΠ Νέα Ιωνία",
+        "name_en": "Nea Ionia ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 28000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7549,
+          38.0415
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-irakleio",
+        "name": "Σταθμός ΗΣΑΠ Ηράκλειο",
+        "name_en": "Irakleio ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 26000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7661,
+          38.0462
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-irini",
+        "name": "Σταθμός ΗΣΑΠ Ειρήνη (ΟΑΚΑ)",
+        "name_en": "Irini OAKA ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 25000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7832,
+          38.0434
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-neratziotissa",
+        "name": "Σταθμός ΗΣΑΠ / Προαστιακός Νερατζιώτισσα",
+        "name_en": "Neratziotissa ISAP & Suburban Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ & Προαστιακός",
+        "transit_mode": "interchange",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)",
+          "Προαστιακός"
+        ],
+        "daily_passengers": 39000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.793,
+          38.0451
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-marousi",
+        "name": "Σταθμός ΗΣΑΠ Μαρούσι",
+        "name_en": "Marousi ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 34000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.805,
+          38.0562
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-kat",
+        "name": "Σταθμός ΗΣΑΠ ΚΑΤ",
+        "name_en": "KAT ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 18000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.804,
+          38.0659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-isap-kifisia",
+        "name": "Σταθμός ΗΣΑΠ Κηφισιά",
+        "name_en": "Kifisia ISAP Station",
+        "category": "metro",
+        "type_label": "Σταθμός ΗΣΑΠ (Ηλεκτρικός)",
+        "transit_mode": "isap",
+        "line_color": "#22c55e",
+        "lines": [
+          "Γραμμή 1 (Πράσινη - ΗΣΑΠ)"
+        ],
+        "daily_passengers": 36000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.8083,
+          38.0736
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-anthoupoli",
+        "name": "Σταθμός Μετρό Ανθούπολη",
+        "name_en": "Anthoupoli Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 31000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6821,
+          38.0171
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-peristeri",
+        "name": "Σταθμός Μετρό Περιστέρι",
+        "name_en": "Peristeri Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 35000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6885,
+          38.0131
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-agios-antonios",
+        "name": "Σταθμός Μετρό Άγιος Αντώνιος",
+        "name_en": "Agios Antonios Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 29000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6995,
+          38.0067
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-sepolia",
+        "name": "Σταθμός Μετρό Σεπόλια",
+        "name_en": "Sepolia Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 32000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7136,
+          38.0026
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-larissa",
+        "name": "Σταθμός Μετρό & Προαστιακός Σταθμός Λαρίσης",
+        "name_en": "Larissa Station Metro & Suburban Rail",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό & Προαστιακός",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)",
+          "Προαστιακός / ΟΣΕ"
+        ],
+        "daily_passengers": 54000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.721,
+          37.9921
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-metaxourgeio",
+        "name": "Σταθμός Μετρό Μεταξουργείο",
+        "name_en": "Metaxourgeio Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 36000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7211,
+          37.9859
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-panepistimio",
+        "name": "Σταθμός Μετρό Πανεπιστήμιο",
+        "name_en": "Panepistimio Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 63000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7329,
+          37.9803
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-syntagma",
+        "name": "Σταθμός Μετρό & Τραμ Σύνταγμα",
+        "name_en": "Syntagma Metro & Tram Station",
+        "category": "metro",
+        "type_label": "Κεντρικός Κόμβος Μετρό & Τραμ",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
         "lines": [
           "Γραμμή 2 (Κόκκινη)",
           "Γραμμή 3 (Μπλε)",
-          "Τραμ"
+          "Τραμ Τ6"
         ],
         "daily_passengers": 135000
       },
@@ -42,7 +765,9 @@
         "name": "Σταθμός Μετρό Ακρόπολη",
         "name_en": "Acropolis Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
         "lines": [
           "Γραμμή 2 (Κόκκινη)"
         ],
@@ -60,13 +785,15 @@
       "type": "Feature",
       "properties": {
         "id": "gis-metro-fix",
-        "name": "Σταθμός Μετρό Συγγρού-Φιξ",
-        "name_en": "Syngrou-Fix Metro Station",
+        "name": "Σταθμός Μετρό & Τραμ Συγγρού-Φιξ",
+        "name_en": "Syngrou-Fix Metro & Tram Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό & Τραμ",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
         "lines": [
           "Γραμμή 2 (Κόκκινη)",
-          "Τραμ"
+          "Τραμ Τ6"
         ],
         "daily_passengers": 58000
       },
@@ -82,13 +809,15 @@
       "type": "Feature",
       "properties": {
         "id": "gis-metro-neos-kosmos",
-        "name": "Σταθμός Μετρό Νέος Κόσμος",
-        "name_en": "Neos Kosmos Metro Station",
+        "name": "Σταθμός Μετρό & Τραμ Νέος Κόσμος",
+        "name_en": "Neos Kosmos Metro & Tram Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό & Τραμ",
+        "transit_mode": "interchange",
+        "line_color": "#ef4444",
         "lines": [
           "Γραμμή 2 (Κόκκινη)",
-          "Τραμ"
+          "Τραμ Τ6"
         ],
         "daily_passengers": 39000
       },
@@ -103,150 +832,369 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-monastiraki",
-        "name": "Σταθμός Μετρό Μοναστηράκι",
-        "name_en": "Monastiraki Metro Station",
+        "id": "gis-metro-agios-ioannis",
+        "name": "Σταθμός Μετρό Άγιος Ιωάννης",
+        "name_en": "Agios Ioannis Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
         "lines": [
-          "Γραμμή 1 (Πράσινη)",
-          "Γραμμή 3 (Μπλε)"
+          "Γραμμή 2 (Κόκκινη)"
         ],
-        "daily_passengers": 96000
+        "daily_passengers": 36000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7256,
-          37.9761
+          23.7344,
+          37.9565
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-thiseio",
-        "name": "Σταθμός ΗΣΑΠ Θησείο",
-        "name_en": "Thiseio Station",
+        "id": "gis-metro-dafni",
+        "name": "Σταθμός Μετρό Δάφνη",
+        "name_en": "Dafni Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός ΗΣΑΠ",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
         "lines": [
-          "Γραμμή 1 (Πράσινη)"
+          "Γραμμή 2 (Κόκκινη)"
         ],
-        "daily_passengers": 34000
+        "daily_passengers": 38000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7208,
-          37.9767
+          23.7372,
+          37.9492
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-petralona",
-        "name": "Σταθμός ΗΣΑΠ Πετράλωνα",
-        "name_en": "Petralona Station",
+        "id": "gis-metro-agios-dimitrios",
+        "name": "Σταθμός Μετρό Άγιος Δημήτριος (Αλ. Παναγούλης)",
+        "name_en": "Agios Dimitrios Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός ΗΣΑΠ",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
         "lines": [
-          "Γραμμή 1 (Πράσινη)"
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 37000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7408,
+          37.9404
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-ilioupoli",
+        "name": "Σταθμός Μετρό Ηλιούπολη (Γρ. Λαμπράκης)",
+        "name_en": "Ilioupoli Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 28000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7445,
+          37.9298
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-alimos",
+        "name": "Σταθμός Μετρό Άλιμος",
+        "name_en": "Alimos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
+        ],
+        "daily_passengers": 27000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7445,
+          37.9182
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-argyroupoli",
+        "name": "Σταθμός Μετρό Αργυρούπολη",
+        "name_en": "Argyroupoli Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
+        "lines": [
+          "Γραμμή 2 (Κόκκινη)"
         ],
         "daily_passengers": 29000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7091,
-          37.9685
+          23.7456,
+          37.9033
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-omonia",
-        "name": "Σταθμός Μετρό Ομόνοια",
-        "name_en": "Omonia Metro Station",
+        "id": "gis-metro-elliniko",
+        "name": "Σταθμός Μετρό Ελληνικό",
+        "name_en": "Elliniko Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
-        "lines": [
-          "Γραμμή 1 (Πράσινη)",
-          "Γραμμή 2 (Κόκκινη)"
-        ],
-        "daily_passengers": 88000
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          23.7282,
-          37.9841
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "gis-metro-victoria",
-        "name": "Σταθμός ΗΣΑΠ Βικτώρια",
-        "name_en": "Victoria Station",
-        "category": "metro",
-        "type_label": "Σταθμός ΗΣΑΠ",
-        "lines": [
-          "Γραμμή 1 (Πράσινη)"
-        ],
-        "daily_passengers": 43000
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          23.7302,
-          37.9931
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "gis-metro-attiki",
-        "name": "Σταθμός Μετρό Αττική",
-        "name_en": "Attiki Metro Station",
-        "category": "metro",
-        "type_label": "Σταθμός Μετρό",
-        "lines": [
-          "Γραμμή 1 (Πράσινη)",
-          "Γραμμή 2 (Κόκκινη)"
-        ],
-        "daily_passengers": 67000
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          23.7229,
-          37.9994
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "gis-metro-panepistimio",
-        "name": "Σταθμός Μετρό Πανεπιστήμιο",
-        "name_en": "Panepistimio Metro Station",
-        "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Κόκκινη Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#ef4444",
         "lines": [
           "Γραμμή 2 (Κόκκινη)"
         ],
-        "daily_passengers": 63000
+        "daily_passengers": 42000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7329,
-          37.9803
+          23.7472,
+          37.8926
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-dimotiko-theatro",
+        "name": "Σταθμός Μετρό Δημοτικό Θέατρο",
+        "name_en": "Dimotiko Theatro Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)",
+          "Τραμ Τ7"
+        ],
+        "daily_passengers": 41000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.647,
+          37.943
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-maniatika",
+        "name": "Σταθμός Μετρό Μανιάτικα",
+        "name_en": "Maniatika Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 22000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6398,
+          37.9593
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-nikaia",
+        "name": "Σταθμός Μετρό Νίκαια",
+        "name_en": "Nikaia Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 36000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6473,
+          37.9657
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-korydallos",
+        "name": "Σταθμός Μετρό Κορυδαλλός",
+        "name_en": "Korydallos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 33000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6505,
+          37.9772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-agia-varvara",
+        "name": "Σταθμός Μετρό Αγία Βαρβάρα",
+        "name_en": "Agia Varvara Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 24000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6592,
+          37.9898
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-agia-marina",
+        "name": "Σταθμός Μετρό Αγία Μαρίνα",
+        "name_en": "Agia Marina Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 34000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6678,
+          37.9969
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-aigaleo",
+        "name": "Σταθμός Μετρό Αιγάλεω",
+        "name_en": "Egaleo Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 38000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6819,
+          37.9914
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-elaionas",
+        "name": "Σταθμός Μετρό Ελαιώνας",
+        "name_en": "Elaionas Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 23000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6939,
+          37.9878
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-kerameikos",
+        "name": "Σταθμός Μετρό Κεραμεικός",
+        "name_en": "Kerameikos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 41000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7115,
+          37.9786
         ]
       }
     },
@@ -257,7 +1205,9 @@
         "name": "Σταθμός Μετρό Ευαγγελισμός",
         "name_en": "Evangelismos Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
         "lines": [
           "Γραμμή 3 (Μπλε)"
         ],
@@ -278,7 +1228,9 @@
         "name": "Σταθμός Μετρό Μέγαρο Μουσικής",
         "name_en": "Megaro Moussikis Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
         "lines": [
           "Γραμμή 3 (Μπλε)"
         ],
@@ -299,7 +1251,9 @@
         "name": "Σταθμός Μετρό Αμπελόκηποι",
         "name_en": "Ampelokipoi Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
         "lines": [
           "Γραμμή 3 (Μπλε)"
         ],
@@ -316,42 +1270,532 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-kerameikos",
-        "name": "Σταθμός Μετρό Κεραμεικός",
-        "name_en": "Kerameikos Metro Station",
+        "id": "gis-metro-panormou",
+        "name": "Σταθμός Μετρό Πανόρμου",
+        "name_en": "Panormou Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
         "lines": [
           "Γραμμή 3 (Μπλε)"
         ],
-        "daily_passengers": 41000
+        "daily_passengers": 44000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7115,
-          37.9786
+          23.7636,
+          37.9931
         ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "id": "gis-metro-metaxourgeio",
-        "name": "Σταθμός Μετρό Μεταξουργείο",
-        "name_en": "Metaxourgeio Metro Station",
+        "id": "gis-metro-katechaki",
+        "name": "Σταθμός Μετρό Κατεχάκη",
+        "name_en": "Katechaki Metro Station",
         "category": "metro",
-        "type_label": "Σταθμός Μετρό",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
         "lines": [
-          "Γραμμή 2 (Κόκκινη)"
+          "Γραμμή 3 (Μπλε)"
         ],
-        "daily_passengers": 36000
+        "daily_passengers": 42000
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          23.7211,
-          37.9859
+          23.7761,
+          37.9933
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-ethniki-amyna",
+        "name": "Σταθμός Μετρό Εθνική Άμυνα",
+        "name_en": "Ethniki Amyna Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 40000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7848,
+          37.9995
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-cholargos",
+        "name": "Σταθμός Μετρό Χολαργός",
+        "name_en": "Cholargos Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 31000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7945,
+          38.0049
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-nomismatokopeio",
+        "name": "Σταθμός Μετρό Νομισματοκοπείο",
+        "name_en": "Nomismatokopio Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 37000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.8058,
+          38.0096
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-agia-paraskevi",
+        "name": "Σταθμός Μετρό Αγία Παρασκευή",
+        "name_en": "Agia Paraskevi Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 33000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.8124,
+          38.0171
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-chalandri",
+        "name": "Σταθμός Μετρό Χαλάνδρι",
+        "name_en": "Chalandri Metro Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό (Μπλε Γραμμή)",
+        "transit_mode": "metro",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)"
+        ],
+        "daily_passengers": 35000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.8211,
+          38.0217
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-metro-doukissis",
+        "name": "Σταθμός Μετρό / Προαστιακός Δουκίσσης Πλακεντίας",
+        "name_en": "Doukissis Plakentias Metro & Suburban Station",
+        "category": "metro",
+        "type_label": "Σταθμός Μετρό & Προαστιακός",
+        "transit_mode": "interchange",
+        "line_color": "#38bdf8",
+        "lines": [
+          "Γραμμή 3 (Μπλε)",
+          "Προαστιακός"
+        ],
+        "daily_passengers": 46000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.8331,
+          38.0242
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-zappeio",
+        "name": "Στάση Τραμ Ζάππειο",
+        "name_en": "Zappeion Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 14000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7369,
+          37.9718
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-vouliagmenis",
+        "name": "Στάση Τραμ Λεωφ. Βουλιαγμένης (Μετς)",
+        "name_en": "Leoforos Vouliagmenis Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 12000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7336,
+          37.9659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-kasomouli",
+        "name": "Στάση Τραμ Κασομούλη (Νέος Κόσμος)",
+        "name_en": "Kasomouli Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 13500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7296,
+          37.9602
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-baknana",
+        "name": "Στάση Τραμ Μπακνανά (Νέος Κόσμος)",
+        "name_en": "Baknana Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 15000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7248,
+          37.9557
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-aigaiou",
+        "name": "Στάση Τραμ Αιγαίου (Νέος Κόσμος / Ν. Σμύρνη)",
+        "name_en": "Aigaiou Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 14500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7192,
+          37.9522
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-agia-foteini",
+        "name": "Στάση Τραμ Αγίας Φωτεινής (Πλ. Νέας Σμύρνης)",
+        "name_en": "Agia Foteini Nea Smyrni Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 19000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7135,
+          37.9462
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-megalou-alexandrou",
+        "name": "Στάση Τραμ Μεγάλου Αλεξάνδρου (Ν. Σμύρνη)",
+        "name_en": "Megalou Alexandrou Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 13000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7107,
+          37.9412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-agia-paraskevi-ns",
+        "name": "Στάση Τραμ Αγία Παρασκευή (Ν. Σμύρνη)",
+        "name_en": "Agia Paraskevi Nea Smyrni Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 11500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7082,
+          37.9374
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-achilleos",
+        "name": "Στάση Τραμ Αχιλλέως (Π. Φάληρο)",
+        "name_en": "Achilleos Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 11000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7051,
+          37.932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-panagitsa",
+        "name": "Στάση Τραμ Παναγίτσα (Π. Φάληρο)",
+        "name_en": "Panagitsa Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ6)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)"
+        ],
+        "daily_passengers": 12500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7013,
+          37.9255
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-edem",
+        "name": "Στάση Τραμ Εδέμ (Παραλία Π. Φαλήρου)",
+        "name_en": "Edem Coastal Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμές Τ6 & Τ7)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)",
+          "Τραμ Τ7 (Παραλιακή)"
+        ],
+        "daily_passengers": 16500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6991,
+          37.9212
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-pikrodafni",
+        "name": "Στάση Τραμ Πικροδάφνη (Μαρίνα Αλίμου)",
+        "name_en": "Pikrodafni Tram Junction",
+        "category": "metro",
+        "type_label": "Κόμβος Τραμ (Γραμμές Τ6 & Τ7)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ6 (Σύνταγμα - Πικροδάφνη)",
+          "Τραμ Τ7 (Παραλιακή)"
+        ],
+        "daily_passengers": 17000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7007,
+          37.9178
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-floisvos",
+        "name": "Στάση Τραμ Φλοίσβος (Μαρίνα Φλοίσβου)",
+        "name_en": "Floisvos Marina Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ7)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ7 (Παραλιακή)"
+        ],
+        "daily_passengers": 18000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6865,
+          37.9268
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-trokantero",
+        "name": "Στάση Τραμ Τροκαντερό (Π. Φάληρο)",
+        "name_en": "Trocadero Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ7)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ7 (Παραλιακή)"
+        ],
+        "daily_passengers": 14500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6852,
+          37.9328
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-tram-tzitzifies",
+        "name": "Στάση Τραμ Τζιτζιφιές (ΚΠΙΣΝ / Καλλιθέα)",
+        "name_en": "Tzitzifies SNFCC Tram Stop",
+        "category": "metro",
+        "type_label": "Στάση Τραμ (Γραμμή Τ7)",
+        "transit_mode": "tram",
+        "line_color": "#f97316",
+        "lines": [
+          "Τραμ Τ7 (Παραλιακή)"
+        ],
+        "daily_passengers": 15500
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.6798,
+          37.9396
         ]
       }
     },
@@ -622,6 +2066,60 @@
         "coordinates": [
           23.7145,
           37.9781
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-plato-academy",
+        "name": "Αρχαιολογικός Χώρος & Ψηφιακό Μουσείο Ακαδημίας Πλάτωνος",
+        "name_en": "Plato's Academy Archaeological Park & Museum",
+        "category": "museum",
+        "type_label": "Αρχαιολογικός Χώρος & Μουσείο",
+        "visitors_annual": 145000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7082,
+          37.9924
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-glyptotheque",
+        "name": "Εθνική Γλυπτοθήκη (Άλσος Στρατού - Γουδί)",
+        "name_en": "National Glyptotheque Goudi",
+        "category": "museum",
+        "type_label": "Μουσείο Τέχνης",
+        "visitors_annual": 115000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7798,
+          37.9896
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-mus-railway",
+        "name": "Σιδηροδρομικό Μουσείο Αθηνών (Κάτω Πατήσια / Σεπόλια)",
+        "name_en": "Hellenic Railway Museum",
+        "category": "museum",
+        "type_label": "Μουσείο",
+        "visitors_annual": 65000
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7205,
+          38.0108
         ]
       }
     },
@@ -1008,6 +2506,158 @@
     {
       "type": "Feature",
       "properties": {
+        "id": "gis-rest-ano-patisia-agia-lavra",
+        "name": "Πλατεία Παπαδιαμάντη, Αγίας Λαύρας & Ηρακλείου (Άνω Πατήσια)",
+        "name_en": "Ano Patisia Papadiamanti & Agias Lavras Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Καφέ & Μεζεδοπωλεία",
+        "venue_count": 38,
+        "cuisine_profile": "Παραδοσιακά Μεζεδοπωλεία, All-Day Καφέ & Ζαχαροπλαστεία"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7382,
+          38.0218
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-kato-patisia-ag-meletios",
+        "name": "Πλατεία Αγίου Μελετίου & Πατησίων (Πατήσια)",
+        "name_en": "Agios Meletios & Patision Dining Strip",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Street Food",
+        "venue_count": 34,
+        "cuisine_profile": "Οινομαγειρεία, Ethnic Street Food & Καφέ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7318,
+          38.0064
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-rizoupoli-prompona",
+        "name": "Λεωφ. Ηρακλείου & Ριζούπολη (Περισσός / Προμπονά)",
+        "name_en": "Rizoupoli & Irakleiou Ave Dining",
+        "category": "restaurant",
+        "type_label": "Ταβέρνες & Καφέ",
+        "venue_count": 29,
+        "cuisine_profile": "Ψητοπωλεία, Μπυραρίες & Σύγχρονα Καφέ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7435,
+          38.0285
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-sepolia-kolonos",
+        "name": "Δυρραχίου & Λόφος Σκουζέ (Σεπόλια / Κολωνός)",
+        "name_en": "Sepolia Dyrrachiou & Kolonos Dining Strip",
+        "category": "restaurant",
+        "type_label": "Μεζεδοπωλεία & Καφέ",
+        "venue_count": 33,
+        "cuisine_profile": "Μεζεδοπωλεία, Ψητοπωλεία & All-Day Cafe-Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7132,
+          38.0012
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-plato-archelaou",
+        "name": "Πλατεία Αγίου Γεωργίου Ακαδημίας Πλάτωνος",
+        "name_en": "Plato's Academy Cooperative Cafes & Tavernas",
+        "category": "restaurant",
+        "type_label": "Καφενεία & Μεζεδοπωλεία",
+        "venue_count": 26,
+        "cuisine_profile": "Συνεργατικά Καφενεία, Παραδοσιακές Ταβέρνες & Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7089,
+          37.9912
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-goudi-ag-thomas",
+        "name": "Πλατεία Αγίου Θωμά & Μικράς Ασίας (Γουδί)",
+        "name_en": "Agios Thomas Square Goudi Dining Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια, Μπυραρίες & Καφέ",
+        "venue_count": 42,
+        "cuisine_profile": "Bistros, Μπυραρίες, Ταβέρνες & Φοιτητικά Καφέ"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7695,
+          37.9848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-ilisia-michalakopoulou",
+        "name": "Πλατεία Βραζιλίας & Ιλίσια (Ούλωφ Πάλμε)",
+        "name_en": "Ilisia & Brazil Square Dining Hub",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & Φοιτητικά Bistros",
+        "venue_count": 37,
+        "cuisine_profile": "All-Day Cafes, Ιταλικά Εστιατόρια & Wine Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7582,
+          37.9768
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-rest-gouva-ymittou",
+        "name": "Λεωφόρος Υμηττού & Πλατεία Πλυτά (Γούβα / Παγκράτι)",
+        "name_en": "Ymittou Ave & Plyta Square Dining",
+        "category": "restaurant",
+        "type_label": "Εστιατόρια & All-Day Bars",
+        "venue_count": 35,
+        "cuisine_profile": "Μεζεδοπωλεία, Specialty Coffee & Cocktail Bars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7435,
+          37.9602
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "id": "gis-poi-kallimarmaro",
         "name": "Παναθηναϊκό Στάδιο (Καλλιμάρμαρο)",
         "name_en": "Panathenaic Stadium (Kallimarmaro)",
@@ -1257,6 +2907,91 @@
         "coordinates": [
           23.7393,
           38.0024
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-parko-klonaridi",
+        "name": "Πάρκο Κλωναρίδη - Φιξ (Πατήσια / Άγιος Λουκάς)",
+        "name_en": "Klonaridi Fix Park Patisia",
+        "category": "landmark",
+        "type_label": "Αστικό Πάρκο & Ιστορικό Ζυθοποιείο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7352,
+          38.0158
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-alsos-prompona",
+        "name": "Δημοτικό Άλσος Προμπονά (Άνω Πατήσια / Προμπονά)",
+        "name_en": "Prompona Municipal Park",
+        "category": "landmark",
+        "type_label": "Αστικό Άλσος & Πάρκο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7375,
+          38.0278
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-alsos-stratou",
+        "name": "Μητροπολιτικό Πάρκο Γουδή & Άλσος Στρατού",
+        "name_en": "Goudi Metropolitan Park",
+        "category": "landmark",
+        "type_label": "Μητροπολιτικό Πάρκο"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7785,
+          37.9885
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-lofos-skouze",
+        "name": "Λόφος Ιππίου Κολωνού & Σκουζέ",
+        "name_en": "Hippeios Kolonos & Skouze Hill Park",
+        "category": "landmark",
+        "type_label": "Αστικό Πάρκο & Λόφος"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7155,
+          37.9962
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gis-poi-attiko-alsos",
+        "name": "Αττικό Άλσος & Τουρκοβούνια (Πολύγωνο / Γκύζη)",
+        "name_en": "Attiko Alsos Park & Viewpoint",
+        "category": "landmark",
+        "type_label": "Πάρκο & Πανοραμική Θέα"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          23.7575,
+          38.0052
         ]
       }
     }

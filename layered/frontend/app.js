@@ -364,16 +364,25 @@ function renderMapGeoJSONLayers() {
     const coords = feat.geometry.coordinates;
     const p = feat.properties;
     const cfg = poiStyleMap[p.category] || poiStyleMap.landmark;
+    const isTransit = p.category === "metro";
+    const transitBadge =
+      p.transit_mode === "tram"
+        ? "🚊 Στάση Τραμ"
+        : p.transit_mode === "isap"
+        ? "🚆 Σταθμός ΗΣΑΠ (Ηλεκτρικός)"
+        : p.transit_mode === "interchange"
+        ? "🔁 Σταθμός Μετεπιβίβασης"
+        : cfg.badge;
     const marker = L.circleMarker([coords[1], coords[0]], {
-      radius: cfg.radius,
-      fillColor: cfg.color,
-      color: "#0f172a",
+      radius: isTransit && p.transit_mode === "tram" ? 5.5 : cfg.radius,
+      fillColor: (isTransit && p.line_color) || cfg.color,
+      color: p.transit_mode === "interchange" ? "#ffffff" : "#0f172a",
       weight: 2,
       fillOpacity: 0.95,
     });
     marker.bindPopup(`
       <div class="text-xs space-y-1 p-1">
-        <div class="text-[10px] uppercase font-bold ${cfg.textClass}">${cfg.badge}</div>
+        <div class="text-[10px] uppercase font-bold ${cfg.textClass}">${isTransit ? transitBadge : cfg.badge}</div>
         <div class="font-bold text-white">${p.name}</div>
         ${p.subtype ? `<div class="text-slate-300">Κατηγορία: <b>${p.subtype}</b></div>` : ""}
         ${p.venue_count ? `<div class="text-amber-300">Χώροι Εστίασης/Μπαρ: <b>~${p.venue_count} καταστήματα</b></div>` : ""}

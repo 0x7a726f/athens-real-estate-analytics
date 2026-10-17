@@ -245,16 +245,17 @@ function renderMapGeoJSONLayers() {
     const p = feat.properties;
     const isMetro = p.category === "metro";
     const m = L.circleMarker([c[1], c[0]], {
-      radius: isMetro ? 6.5 : 5.5,
-      fillColor: poiColors[p.category] || "#34d399",
-      color: "#0f172a",
+      radius: isMetro ? (p.transit_mode === "tram" ? 5 : 6.5) : 5.5,
+      fillColor: (isMetro && p.line_color) || poiColors[p.category] || "#34d399",
+      color: p.transit_mode === "interchange" ? "#ffffff" : "#0f172a",
       weight: 2,
       fillOpacity: 0.95,
     });
     m.bindPopup(`
       <div class="text-xs space-y-0.5">
         <b>${p.name}</b>
-        ${p.subtype ? `<br/><span class="text-slate-300">${p.subtype}</span>` : ""}
+        ${p.type_label ? `<br/><span class="text-slate-300">${p.type_label}</span>` : ""}
+        ${p.lines ? `<br/><span class="text-sky-300">Γραμμές: ${p.lines.join(", ")}</span>` : ""}
         ${p.venue_count ? `<br/><span class="text-amber-300">~${p.venue_count} χώροι εστίασης</span>` : ""}
       </div>
     `);
