@@ -114,10 +114,11 @@
           <span>📱 MVC Mobile</span>
         </a>
 
-        <button id="btnSyncData" onclick="syncAllDataSources()" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
-          <span>&#x21bb;</span>
-          <span>Sync APIs</span>
+        <button id="btnSyncData" onclick="syncAllDataSources()" class="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5 shadow-sm active:scale-95" title="Επαναφόρτωση &amp; Συγχρονισμός Δεδομένων από Inside Airbnb, Athens GIS &amp; Eurostat">
+          <span id="btnSyncIcon" class="inline-block transition-transform duration-300">&#x21bb;</span>
+          <span id="btnSyncLabel">Sync APIs</span>
         </button>
+        <span id="syncStatusBadge" class="hidden text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 whitespace-nowrap"></span>
       </div>
     </div>
   </header>
@@ -719,7 +720,7 @@
     Εργασία Εξαμήνου «Τεχνολογία Λογισμικού» ΕΜΠ 2026–2027 &bull; Έκδοση v1.0 &bull; Πηγές: Inside Airbnb, Athens GIS, Eurostat Urban Audit
   </footer>
 
-  <script src="./serverless_engine.js?v=1.6"></script>
-  <script src="./app.js?v=1.6"></script>
+  <script src="./serverless_engine.js?v=1.7"></script>
+  <script src="./app.js?v=1.7"></script>
 </body>
 </html>

@@ -69,18 +69,19 @@
     return "../data";
   }
 
-  async function loadDatabase() {
-    if (DB_PROMISE) return DB_PROMISE;
+  async function loadDatabase(forceReload = false) {
+    if (DB_PROMISE && !forceReload) return DB_PROMISE;
     DB_PROMISE = (async () => {
       const base = await resolveDataBaseUrl();
+      const cacheBust = forceReload ? `?_t=${Date.now()}` : "";
       const [nbResp, airbnbResp, poiResp, hazResp, euroResp, scenResp] =
         await Promise.all([
-          ORIGINAL_FETCH(`${base}/neighborhoods.geojson`),
-          ORIGINAL_FETCH(`${base}/airbnb_listings.geojson`),
-          ORIGINAL_FETCH(`${base}/athens_gis_pois.geojson`),
-          ORIGINAL_FETCH(`${base}/athens_gis_hazards.geojson`),
-          ORIGINAL_FETCH(`${base}/eurostat_urban_audit_cache.json`),
-          ORIGINAL_FETCH(`${base}/scenarios.json`),
+          ORIGINAL_FETCH(`${base}/neighborhoods.geojson${cacheBust}`),
+          ORIGINAL_FETCH(`${base}/airbnb_listings.geojson${cacheBust}`),
+          ORIGINAL_FETCH(`${base}/athens_gis_pois.geojson${cacheBust}`),
+          ORIGINAL_FETCH(`${base}/athens_gis_hazards.geojson${cacheBust}`),
+          ORIGINAL_FETCH(`${base}/eurostat_urban_audit_cache.json${cacheBust}`),
+          ORIGINAL_FETCH(`${base}/scenarios.json${cacheBust}`),
         ]);
 
       const [nbGeo, airbnbGeo, poiGeo, hazGeo, euroCache, seedScenarios] =
@@ -1256,10 +1257,20 @@
     }
 
     if (path.endsWith("/api/v1/admin/sync")) {
+      DB_PROMISE = null;
       TOP_REC_CACHE = {};
+      const freshDb = await loadDatabase(true);
       return makeJsonResponse({
         status: "synchronized",
         synced_at: new Date().toISOString(),
+        datasets_reloaded: {
+          neighborhoods: (freshDb.neighborhoodsGeo.features || []).length,
+          airbnb_listings: (freshDb.airbnbGeo.features || []).length,
+          gis_pois: (freshDb.poisGeo.features || []).length,
+          gis_hazards: (freshDb.hazardsGeo.features || []).length,
+          eurostat_cities: Object.keys(freshDb.eurostatCache.cities || {}).length,
+        },
+        mode: "Serverless Live Datasets Reloaded",
       });
     }
 

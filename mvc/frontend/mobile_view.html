@@ -32,9 +32,15 @@
         </div>
         <h1 class="text-sm font-extrabold text-white">Athens Urban Analytics</h1>
       </div>
-      <a href="./desktop_view.html" onclick="if(!location.hostname.endsWith('github.io') && !location.pathname.endsWith('.html')){this.href='/desktop'}" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 border border-slate-700">
-        🖥️ Desktop View
-      </a>
+      <div class="flex items-center gap-1.5">
+        <button id="btnSyncData" onclick="syncAllDataSources()" class="text-[11px] font-semibold px-2 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1 active:scale-95" title="Sync APIs">
+          <span id="btnSyncIcon" class="inline-block transition-transform duration-300">&#x21bb;</span>
+          <span id="btnSyncLabel">Sync</span>
+        </button>
+        <a href="./desktop_view.html" onclick="if(!location.hostname.endsWith('github.io') && !location.pathname.endsWith('.html')){this.href='/desktop'}" class="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 border border-slate-700">
+          🖥️ Desktop
+        </a>
+      </div>
     </header>
 
     <!-- Quick Sticky Score Banner -->
@@ -303,7 +309,7 @@
       }
     }
   </script>
-  <script src="./serverless_engine.js?v=1.6"></script>
-  <script src="./mvc_client.js?v=1.6"></script>
+  <script src="./serverless_engine.js?v=1.7"></script>
+  <script src="./mvc_client.js?v=1.7"></script>
 </body>
 </html>
